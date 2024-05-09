@@ -8,7 +8,7 @@
 - **Clases**: ``PascalCase``
 - **Funciones/variables**: ``camelCase``
 - **Formateador de código**: El propio de IntelliJ
-- Endpoints anotados con ``OAS/Swagger`` para poder generar documentación.
+- Endpoints anotados con ``OAS/Swagger`` para poder generar documentación: http://localhost:8080/swagger-ui/index.html
 - Utilizar ``MyBatis``
 
 ## **Uso de GitFlow**:
