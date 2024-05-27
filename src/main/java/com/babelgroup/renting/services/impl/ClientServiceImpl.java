@@ -8,6 +8,8 @@ import com.babelgroup.renting.mappers.CountryMapper;
 import com.babelgroup.renting.mappers.EmployeeMapper;
 import com.babelgroup.renting.mappers.ProvinceMapper;
 import com.babelgroup.renting.services.ClientService;
+import com.babelgroup.renting.services.CountryService;
+import com.babelgroup.renting.services.ProvinceService;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,12 +18,14 @@ public class ClientServiceImpl implements ClientService {
 
     private final ClientMapper clientMapper;
     private final EmployeeMapper employeeMapper;
-    private final CountryMapper countryMapper;
+    private final ProvinceService provinceService;
+    private final CountryService countryService;
 
-    public ClientServiceImpl(ClientMapper clientMapper, EmployeeMapper employeeMapper, CountryMapper countryMapper) {
+    public ClientServiceImpl(ClientMapper clientMapper, EmployeeMapper employeeMapper, CountryService countryService, ProvinceService provinceService) {
         this.clientMapper = clientMapper;
         this.employeeMapper = employeeMapper;
-        this.countryMapper = countryMapper;
+        this.countryService = countryService;
+        this.provinceService = provinceService;
     }
 
     @Override
@@ -36,14 +40,18 @@ public class ClientServiceImpl implements ClientService {
         if (client == null) {
             return false;
         }
-        Country country = countryMapper.getCountry(clientUpdateDto.getCountry());
-        client.setCountry(country);
-        Long employeeId = employeeMapper.getEmployeeByClient(clientId);
-        Long salariedId = employeeMapper.getSalariedId(employeeId);
-        clientUpdateDto.setSalariedId(salariedId);
 
-        return this.clientMapper.updateClient(client) && this.employeeMapper.updateSalariedSalary(clientUpdateDto)
-                && this.employeeMapper.updateSalariedValues(clientUpdateDto);
+        Country country = countryService.getCountry(clientUpdateDto.getCountry());
+        client.setCountry(country);
+        client.setName(clientUpdateDto.getName());
+        client.setLastnameFirst(clientUpdateDto.getLastnameFirst());
+        client.setLastnameSecond(clientUpdateDto.getLastnameSecond());
+        Province province = provinceService.getProvince(clientUpdateDto.getProvinceCode());
+        client.setProvinceCode(province);
+
+//        return this.clientMapper.updateClient(client) && this.employeeMapper.updateSalariedSalary(clientUpdateDto)
+//                && this.employeeMapper.updateSalariedValues(clientUpdateDto);
+        return false;
     }
 
     @Override
