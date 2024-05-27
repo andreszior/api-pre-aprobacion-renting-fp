@@ -33,8 +33,7 @@ import org.springframework.web.bind.annotation.*;
 })
 public class ClientController {
     private final ClientService clientService;
-    private final CountryService countryService;
-    private final ProvinceService provinceService;
+
     private final ClientValidator clientValidator;
 
 
@@ -42,8 +41,7 @@ public class ClientController {
                             CountryService countryService, ProvinceService provinceService) {
         this.clientService = clientService;
         this.clientValidator = clientValidator;
-        this.countryService = countryService;
-        this.provinceService = provinceService;
+
     }
 
     @PostMapping("")
@@ -57,38 +55,36 @@ public class ClientController {
         clientValidator.validate(clientDto, bindingResult);
         Client client;
         try {
-            if (bindingResult.hasErrors()) {
-                return new ResponseEntity<>(bindingResult.getAllErrors(), HttpStatus.BAD_REQUEST);
-            }
-
-            if (clientService.clientExists(clientDto.getDni())) {
-                return new ResponseEntity<>("El cliente ya existe", HttpStatus.BAD_REQUEST);
-            }
-
-            if (!isFreelance(clientDto) && !isSalaried(clientDto)) {
-                return new ResponseEntity<>("El cliente debe ser autónomo o asalariado", HttpStatus.BAD_REQUEST);
-            }
-
-            client = buildClientEntity(clientDto);
-
-            if (client.getCountry() == null || client.getProvinceCode() == null) {
-                return new ResponseEntity<>("El país o la provincia no existen o son erroneas", HttpStatus.BAD_REQUEST);
-            }
-
-            clientService.createClient(client);
-            Employee employee = buildEmployeeEntity(client);
-            clientService.createEmployee(employee);
-
-            createSalariedEntries(clientDto, employee);
-            createFreelanceEntries(clientDto, employee);
-
-
-        } catch (Exception e) {
+            validation(clientDto, bindingResult);
+            client = clientService.createClient(clientDto);
+        }
+//        catch (CutomException ce){
+//            return new ResponseEntity<>(ce.httpMessage,ce.httpStatus);
+//        }
+        catch (Exception e) {
             Log.logError(e.getMessage(), e);
             return new ResponseEntity<>("Error interno del servidor.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         Log.logInfo("Cliente creado correctamente.");
         return new ResponseEntity<>(client.getId(), HttpStatus.CREATED);
+    }
+
+    private void validation(ClientDto clientDto, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            //throw new ErrorsException();
+        }
+
+        if (clientService.clientExists(clientDto.getDni())) {
+            //throw new ClientExistsException();
+        }
+
+        if (!isFreelance(clientDto) && !isSalaried(clientDto)) {
+            //throw new IncomeException();
+            //return new ResponseEntity<>("El cliente debe ser autónomo o asalariado", HttpStatus.BAD_REQUEST);
+        }
+        if (clientDto.getCountry() == null || clientDto.getProvinceCode() == null) {
+            //throw new CountryException();
+        }
     }
 
     @PutMapping("/{clientId}")
@@ -104,9 +100,9 @@ public class ClientController {
             Boolean updated = clientService.updateClient(clientId, clientUpdateDto);
             if (Boolean.TRUE.equals(updated)) {
                 return new ResponseEntity<>(clientUpdateDto, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(clientUpdateDto, HttpStatus.NOT_FOUND);
             }
+            return new ResponseEntity<>(clientUpdateDto, HttpStatus.NOT_FOUND);
+
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -118,69 +114,14 @@ public class ClientController {
     @ApiResponse(responseCode = "200", description = "Cliente eliminado correctamente.")
     @ApiResponse(responseCode = "404", description = "Cliente no encontrado.")
     public ResponseEntity<Void> deleteClient(@PathVariable long clientId){
-        boolean deleted = clientService.deleteClient(clientId);
-        if (deleted) {
+        Boolean deleted = clientService.deleteClient(clientId);
+        if (Boolean.TRUE.equals(deleted)) {
             return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.notFound().build();
         }
+        return ResponseEntity.notFound().build();
     }
 
-    public Client buildClientEntity(ClientDto clientDto) {
-        return Client.builder()
-                .dni(clientDto.getDni())
-                .name(clientDto.getName())
-                .rating(0)
-                .birthdate(clientDto.getBirthdate())
-                .lastnameFirst(clientDto.getLastnameFirst())
-                .lastnameSecond(clientDto.getLastnameSecond())
-                .country(countryService.getCountry(clientDto.getCountry()))
-                .provinceCode(provinceService.getProvince(clientDto.getProvinceCode()))
-                .build();
-    }
 
-    public Employee buildEmployeeEntity(Client client) {
-        return Employee.builder()
-                .id(client.getId())
-                .clientId(client.getId())
-                .build();
-    }
-
-    public void createSalariedEntries(ClientDto clientDto, Employee employee) {
-        if (isSalaried(clientDto)) {
-            Salaried salaried = Salaried.builder()
-                    .jobAntiquity(clientDto.getJobAntiquity())
-                    .employeeId(employee.getId())
-                    .cif(clientDto.getCompanyCif())
-                    .build();
-
-            clientService.createSalaried(salaried);
-            Log.logInfo("Registro cliente asalariado creado correctamente.");
-
-            SalariedIncome salaryIncome = SalariedIncome.builder()
-                    .netIncome(clientDto.getNetIncome())
-                    .salariedId(salaried.getId())
-                    .salaryYear(clientDto.getSalaryYear())
-                    .build();
-
-            clientService.createSalariedIncome(salaryIncome);
-            Log.logInfo("Registro ingresos asalariado creado correctamente.");
-        }
-    }
-
-    public void createFreelanceEntries(ClientDto clientDto, Employee employee){
-        if (isFreelance(clientDto)) {
-            Freelance freelance = Freelance.builder()
-                    .netIncome(clientDto.getNetIncome())
-                    .grossIncome(clientDto.getGrossIncome())
-                    .yearSalary(clientDto.getSalaryYear())
-                    .employeeId(employee.getId())
-                    .build();
-
-            clientService.createFreelance(freelance);
-            Log.logInfo("Registro cliente autónomo creado correctamente.");
-        }
-    }
 
     public Boolean isFreelance(ClientDto clientDto) {
         return clientDto.getGrossIncome() != null && clientDto.getNetIncome() != null && clientDto.getSalaryYear() != null;
