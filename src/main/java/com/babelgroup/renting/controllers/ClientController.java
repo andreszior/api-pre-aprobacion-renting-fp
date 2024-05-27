@@ -58,8 +58,8 @@ public class ClientController {
             validation(clientDto, bindingResult);
             client = clientService.createClient(clientDto);
         }
-//        catch (CutomException ce){
-//            return new ResponseEntity<>(ce.httpMessage,ce.httpStatus);
+//        catch (RequestValidationException rve){
+//            return new ResponseEntity<>(rve.httpMessage,rve.httpStatus);
 //        }
         catch (Exception e) {
             Log.logError(e.getMessage(), e);
@@ -79,11 +79,10 @@ public class ClientController {
         }
 
         if (!isFreelance(clientDto) && !isSalaried(clientDto)) {
-            //throw new IncomeException();
-            //return new ResponseEntity<>("El cliente debe ser autónomo o asalariado", HttpStatus.BAD_REQUEST);
+            //throw new ClientNotFreelanceOrSalariedException();
         }
         if (clientDto.getCountry() == null || clientDto.getProvinceCode() == null) {
-            //throw new CountryException();
+            //throw new CountryOrProvinceException();
         }
     }
 
