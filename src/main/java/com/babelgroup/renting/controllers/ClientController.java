@@ -4,6 +4,10 @@ package com.babelgroup.renting.controllers;
 import com.babelgroup.renting.entities.*;
 import com.babelgroup.renting.entities.dtos.ClientDto;
 import com.babelgroup.renting.entities.dtos.ClientUpdateDto;
+import com.babelgroup.renting.exceptions.ClientNotFreelanceOrSalariedException;
+import com.babelgroup.renting.exceptions.ClientsAlreadyExistsException;
+import com.babelgroup.renting.exceptions.CountryOrProvinceException;
+import com.babelgroup.renting.exceptions.RequestValidationException;
 import com.babelgroup.renting.logger.Log;
 import com.babelgroup.renting.services.ClientService;
 import com.babelgroup.renting.services.CountryService;
@@ -55,12 +59,15 @@ public class ClientController {
         clientValidator.validate(clientDto, bindingResult);
         Client client;
         try {
-            validation(clientDto, bindingResult);
+            if (bindingResult.hasErrors()) {
+                return new ResponseEntity<>(bindingResult.getAllErrors(), HttpStatus.BAD_REQUEST);
+            }
+            validation(clientDto);
             client = clientService.createClient(clientDto);
         }
-//        catch (RequestValidationException rve){
-//            return new ResponseEntity<>(rve.httpMessage,rve.httpStatus);
-//        }
+        catch (RequestValidationException rve){
+            return new ResponseEntity<>(rve.getHttpMessage(), rve.getHttpStatus());
+        }
         catch (Exception e) {
             Log.logError(e.getMessage(), e);
             return new ResponseEntity<>("Error interno del servidor.", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -69,20 +76,17 @@ public class ClientController {
         return new ResponseEntity<>(client.getId(), HttpStatus.CREATED);
     }
 
-    private void validation(ClientDto clientDto, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            //throw new ErrorsException();
-        }
+    private void validation(ClientDto clientDto) throws RequestValidationException {
 
         if (clientService.clientExists(clientDto.getDni())) {
-            //throw new ClientExistsException();
+            throw new ClientsAlreadyExistsException("El cliente ya existe");
         }
 
         if (!isFreelance(clientDto) && !isSalaried(clientDto)) {
-            //throw new ClientNotFreelanceOrSalariedException();
+            throw new ClientNotFreelanceOrSalariedException("El cliente debe ser freelance o asalariado");
         }
         if (clientDto.getCountry() == null || clientDto.getProvinceCode() == null) {
-            //throw new CountryOrProvinceException();
+            throw new CountryOrProvinceException("El cliente no tiene provincia o país");
         }
     }
 
