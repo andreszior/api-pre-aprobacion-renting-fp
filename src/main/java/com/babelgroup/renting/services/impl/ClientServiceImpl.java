@@ -1,6 +1,7 @@
 package com.babelgroup.renting.services.impl;
 
 import com.babelgroup.renting.entities.*;
+import com.babelgroup.renting.entities.dtos.ClientDto;
 import com.babelgroup.renting.entities.dtos.ClientUpdateDto;
 import com.babelgroup.renting.logger.Log;
 import com.babelgroup.renting.mappers.ClientMapper;
@@ -18,24 +19,24 @@ public class ClientServiceImpl implements ClientService {
     private final ClientMapper clientMapper;
     private final ProvinceService provinceService;
     private final IncomeMapper incomeMapper;
-    private final CountryMapper countryMapper;
+    private final CountryService countryService;
 
-    public ClientServiceImpl(ClientMapper clientMapper, IncomeMapper incomeMapper, CountryMapper countryMapper, ProvinceService provinceService) {
+    public ClientServiceImpl(ClientMapper clientMapper, IncomeMapper incomeMapper, CountryService countryService, ProvinceService provinceService) {
 
         this.clientMapper = clientMapper;
         this.incomeMapper = incomeMapper;
-        this.countryMapper = countryMapper;
+        this.countryService = countryService;
         this.provinceService = provinceService;
     }
 
     @Override
     public Client createClient(ClientDto clientDto) {
         Client client = buildClientEntity(clientDto);
-        Employee employee = buildEmployeeEntity(client);
+       /* Employee employee = buildEmployeeEntity(client);
         createEmployee(employee);
 
         createSalariedEntries(clientDto, employee);
-        createFreelanceEntries(clientDto, employee);
+        createFreelanceEntries(clientDto, employee);*/
         this.clientMapper.createClient(client);
         return client;
     }
@@ -55,12 +56,13 @@ public class ClientServiceImpl implements ClientService {
         Province province = provinceService.getProvince(clientUpdateDto.getProvinceCode());
         client.setProvinceCode(province);
 
+        return this.clientMapper.updateClient(client);
+
 //        return this.clientMapper.updateClient(client) && this.employeeMapper.updateSalariedSalary(clientUpdateDto)
 //                && this.employeeMapper.updateSalariedValues(clientUpdateDto);
-        return false;
     }
 
-    @Override
+   /* @Override
     public Employee createEmployee(Employee employee) {
         this.clientMapper.createEmployee(employee);
         return employee;
@@ -82,11 +84,11 @@ public class ClientServiceImpl implements ClientService {
     public Freelance createFreelance(Freelance freelance) {
         this.clientMapper.createFreelance(freelance);
         return freelance;
-    }
+    }*/
 
     @Override
     public Boolean deleteClient(long clientId) {
-        return null;
+        return this.clientMapper.deleteClient(clientId);;
     }
 
     @Override
@@ -108,7 +110,7 @@ public class ClientServiceImpl implements ClientService {
                 .build();
     }
 
-    public Employee buildEmployeeEntity(Client client) {
+   /* public Employee buildEmployeeEntity(Client client) {
         return Employee.builder()
                 .id(client.getId())
                 .clientId(client.getId())
@@ -149,7 +151,7 @@ public class ClientServiceImpl implements ClientService {
             createFreelance(freelance);
             Log.logInfo("Registro cliente autónomo creado correctamente.");
         }
-    }
+    }*/
 
     public Boolean isFreelance(ClientDto clientDto) {
         return clientDto.getGrossIncome() != null && clientDto.getNetIncome() != null && clientDto.getSalaryYear() != null;

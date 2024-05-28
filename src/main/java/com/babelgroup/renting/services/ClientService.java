@@ -14,11 +14,11 @@ public interface ClientService {
 
     Boolean clientExists(String dni);
 
-    Employee createEmployee(Employee employee);
+ /*   Employee createEmployee(Employee employee);
 
     Salaried createSalaried(Salaried salaried);
 
     SalariedIncome createSalariedIncome(SalariedIncome salariedIncome);
 
-    Freelance createFreelance(Freelance freelance);
+    Freelance createFreelance(Freelance freelance);*/
 }
