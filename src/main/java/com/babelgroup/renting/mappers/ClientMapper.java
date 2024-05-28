@@ -103,6 +103,6 @@ public interface ClientMapper {
     Client getClientById(long clientId);
 
     @Update("UPATE INGUNIV_SCORING.CLIENTE c SET c.NOMBRE = #{name}, c.APELLIDO = #{lastnameFirst}, " +
-            "c.SEGUNDO_APELLIDO = #{lastnameSecond}, c.NACIONALIDAD = #{country.id} WHERE c.id_cliente = #{id}")
+            "c.SEGUNDO_APELLIDO = #{lastnameSecond}, c.NACIONALIDAD = #{country.id}, c.CODIGO_PROVINICA = #{provinceCode} WHERE c.id_cliente = #{id}")
     boolean updateClient(Client client);
 }
