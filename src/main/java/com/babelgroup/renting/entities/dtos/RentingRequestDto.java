@@ -40,4 +40,7 @@ public class RentingRequestDto {
 
     @Schema(description = "Estado de la solicitud", example = "PENDIENTE")
     private String resolution;
+
+    @Schema(description = "Estado de eliminación lógica de la solicitud", example = "0")
+    private Integer isDeleted;
 }

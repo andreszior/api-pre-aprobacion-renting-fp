@@ -54,9 +54,12 @@ public interface RentingRequestMapper {
             "WHERE RESULTADO = #{status}")
     List<RentingRequest> findRentingRequestsByStatus(String status);
 
-    @Delete("DELETE FROM SOLICITUD " +
-            "WHERE ID_SOLICITUD = #{rentingRequestId}")
-    int deleteRentingRequest(@Param("rentingRequestId") long rentingRequestId) throws RentingRequestNotFoundException;
+    @Select("SELECT COUNT (*)" +
+            "FROM SOLICITUD" +
+            "WHERE RESULTADO = Denegada AND ID_SOLICITUD = #{solicitudId};")
+    int numberOfDeniedRequest(@Param ("solicitudId") Long solicitudId);
+    @Update("UPDATE SOLICITUD SET BORRADO_LOGICO = 1 WHERE ID_SOLICITUD = #{solicitudId}")
+    void deleteSolicitud(@Param("solicitudId") Long solicitudId);
 
     @Select("SELECT MAX(FECHA_RESOLUCION)" +
             " FROM SOLICITUD" +

@@ -1,6 +1,7 @@
 package com.babelgroup.renting.services.impl;
 
 import com.babelgroup.renting.entities.*;
+import com.babelgroup.renting.entities.dtos.ClientDto;
 import com.babelgroup.renting.entities.dtos.ClientUpdateDto;
 import com.babelgroup.renting.logger.Log;
 import com.babelgroup.renting.mappers.ClientMapper;
@@ -137,7 +138,7 @@ public class ClientServiceImpl implements ClientService {
         }
     }
 
-    public void createFreelanceEntries(ClientDto clientDto, Employee employee){
+    public void createFreelanceEntries(ClientDto clientDto, Employee employee) {
         if (isFreelance(clientDto)) {
             Freelance freelance = Freelance.builder()
                     .netIncome(clientDto.getNetIncome())
@@ -157,5 +158,17 @@ public class ClientServiceImpl implements ClientService {
 
     public Boolean isSalaried(ClientDto clientDto) {
         return clientDto.getJobAntiquity() != null && clientDto.getCompanyCif() != null && clientDto.getNetIncome() != null && clientDto.getSalaryYear() != null;
+    }
+
+    public Boolean canDeleteUserWithNoRequests(Long clientId) {
+        return this.clientMapper.getNumberOfExistingRequest(clientId) <= 0;
+    }
+
+    public Boolean deleteClient(Long clientId) {
+        if (canDeleteUserWithNoRequests(clientId)) {
+            this.clientMapper.deleteClient(clientId);
+            return true;
+        }
+        return false;
     }
 }
