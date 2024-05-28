@@ -56,7 +56,7 @@ public interface ClientMapper {
             "AND pc.fecha_baja < CURRENT_DATE()")
     boolean isNewClient(Long clientId);
 
-    @Select("SELECT COUNT(*) <> 0" +
+    @Select("SELECT (CASE WHEN COUNT(*) <> 0 THEN 'TRUE' ELSE 'FALSE' END)" +
             "FROM Cliente c" +
             "INNER JOIN solicitud s ON c.ID_CLIENTE = s.ID_CLIENTE" +
             "INNER JOIN garantia g ON G.ID_GARANTIA = s.ID_SOLICITUD" +
