@@ -56,7 +56,7 @@ public interface ClientMapper {
             "AND pc.fecha_baja < CURRENT_DATE()")
     boolean isNewClient(Long clientId);
 
-    @Select("SELECT COUNT(*) <> 0" +
+    @Select("SELECT (CASE WHEN COUNT(*) <> 0 THEN 'TRUE' ELSE 'FALSE' END)" +
             "FROM Cliente c" +
             "INNER JOIN solicitud s ON c.ID_CLIENTE = s.ID_CLIENTE" +
             "INNER JOIN garantia g ON G.ID_GARANTIA = s.ID_SOLICITUD" +
@@ -103,6 +103,6 @@ public interface ClientMapper {
     Client getClientById(long clientId);
 
     @Update("UPATE INGUNIV_SCORING.CLIENTE c SET c.NOMBRE = #{name}, c.APELLIDO = #{lastnameFirst}, " +
-            "c.SEGUNDO_APELLIDO = #{lastnameSecond}, c.NACIONALIDAD = #{country.id} WHERE c.id_cliente = #{id}")
+            "c.SEGUNDO_APELLIDO = #{lastnameSecond}, c.NACIONALIDAD = #{country.id}, c.CODIGO_PROVINICA = #{provinceCode} WHERE c.id_cliente = #{id}")
     boolean updateClient(Client client);
 }
