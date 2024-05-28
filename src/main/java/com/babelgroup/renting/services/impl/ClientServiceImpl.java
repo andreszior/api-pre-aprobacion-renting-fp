@@ -16,15 +16,15 @@ public class ClientServiceImpl implements ClientService {
 
 
     private final ClientMapper clientMapper;
+    private final ProvinceService provinceService;
     private final IncomeMapper incomeMapper;
     private final CountryMapper countryMapper;
 
-    public ClientServiceImpl(ClientMapper clientMapper, IncomeMapper incomeMapper, CountryMapper countryMapper) {
+    public ClientServiceImpl(ClientMapper clientMapper, IncomeMapper incomeMapper, CountryMapper countryMapper, ProvinceService provinceService) {
 
         this.clientMapper = clientMapper;
         this.incomeMapper = incomeMapper;
         this.countryMapper = countryMapper;
-        this.countryService = countryService;
         this.provinceService = provinceService;
     }
 
@@ -46,14 +46,18 @@ public class ClientServiceImpl implements ClientService {
         if (client == null) {
             return false;
         }
-        Country country = countryMapper.getCountry(clientUpdateDto.getCountry());
-        client.setCountry(country);
-        Long employeeId = incomeMapper.getEmployeeByClient(clientId);
-        Long salariedId = incomeMapper.getSalariedId(employeeId);
-        clientUpdateDto.setSalariedId(salariedId);
 
-        return this.clientMapper.updateClient(client) && this.incomeMapper.updateSalariedSalary(clientUpdateDto)
-                && this.incomeMapper.updateSalariedValues(clientUpdateDto);
+        Country country = countryService.getCountry(clientUpdateDto.getCountry());
+        client.setCountry(country);
+        client.setName(clientUpdateDto.getName());
+        client.setLastnameFirst(clientUpdateDto.getLastnameFirst());
+        client.setLastnameSecond(clientUpdateDto.getLastnameSecond());
+        Province province = provinceService.getProvince(clientUpdateDto.getProvinceCode());
+        client.setProvinceCode(province);
+
+//        return this.clientMapper.updateClient(client) && this.employeeMapper.updateSalariedSalary(clientUpdateDto)
+//                && this.employeeMapper.updateSalariedValues(clientUpdateDto);
+        return false;
     }
 
     @Override

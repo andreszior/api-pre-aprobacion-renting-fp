@@ -4,10 +4,8 @@ import com.babelgroup.renting.entities.RentingRequest;
 import com.babelgroup.renting.entities.RequestResult;
 import com.babelgroup.renting.entities.dtos.RentingRequestDto;
 import com.babelgroup.renting.entities.dtos.RentingRequestStatusDto;
-import com.babelgroup.renting.exceptions.EmptyRentingRequestException;
 import com.babelgroup.renting.exceptions.RentingRequestNotFoundException;
 import com.babelgroup.renting.services.RentingRequestService;
-import com.babelgroup.renting.services.VehicleRentingRequestService;
 import com.babelgroup.renting.validators.RentingRequestValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -23,7 +21,6 @@ import org.springframework.validation.DataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/rentingRequest")
@@ -59,8 +56,8 @@ public class RentingRequestController {
         }
 
         try {
-            RentingRequest newRentingRequest = rentingRequestService.createRentingRequest(convertToEntity(rentingRequestDto));
-            RentingRequestDto newRentingRequestDto = convertToDto(newRentingRequest);
+            RentingRequest newRentingRequest = rentingRequestService.createRentingRequestFromDto(rentingRequestDto);
+            RentingRequestDto newRentingRequestDto = rentingRequestService.getRentingRequestDto(newRentingRequest.getId());
             return new ResponseEntity<>(newRentingRequestDto, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -75,7 +72,7 @@ public class RentingRequestController {
     @ApiResponse(responseCode = "404", description = "Renting request no encontrada.")
     public ResponseEntity<?> getRentingRequest(@PathVariable long rentingRequestId) {
         try {
-            RentingRequestDto rentingRequest = convertToDto(rentingRequestService.getRentingRequest(rentingRequestId));
+            RentingRequestDto rentingRequest = rentingRequestService.getRentingRequestDto(rentingRequestId);
             return new ResponseEntity<>(rentingRequest, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -96,7 +93,7 @@ public class RentingRequestController {
         }
     }
 
-    @GetMapping("/{rentingRequestStatus}")
+    @GetMapping("/status/{rentingRequestStatus}")
     @Operation(summary = "Se obtiene una lista de solicitudes con el Status indicado.",
             description = "Dado un rentingRequestStatus por parámetro, se obtiene una lista de solicitudes con Status rentingRequestStatus.")
     @ApiResponse(responseCode = "200", description = "Lista de solicitudes filtradas correctamente.")
@@ -107,7 +104,7 @@ public class RentingRequestController {
         try {
             String description = RequestResult.getDescriptionByName(rentingRequestStatus);
             List<RentingRequest> rentingRequests = rentingRequestService.getFilteredRentingRequests(description);
-            return new ResponseEntity<>(convertToDtoList(rentingRequests), HttpStatus.ACCEPTED);
+            return new ResponseEntity<>(rentingRequestService.convertToDtoList(rentingRequests), HttpStatus.ACCEPTED);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -131,7 +128,7 @@ public class RentingRequestController {
         }
 
         try {
-            RentingRequestDto updatedRequest = convertToDto(rentingRequestService.updateRentingRequestStatus(rentingRequestId, rentingRequestStatusDto.getStatus()));
+            RentingRequestDto updatedRequest = rentingRequestService.getRentingRequestDto(rentingRequestService.updateRentingRequestStatus(rentingRequestId, rentingRequestStatusDto.getStatus()).getId());
             if (updatedRequest != null) {
                 return ResponseEntity.ok(updatedRequest);
             } else {
@@ -142,45 +139,5 @@ public class RentingRequestController {
         }
     }
 
-    private RentingRequestDto convertToDto(RentingRequest rentingRequest) throws EmptyRentingRequestException {
-        if (rentingRequest == null) throw new EmptyRentingRequestException();
-        return RentingRequestDto.builder()
-                .clientId(rentingRequest.getClientId())
-                .rentingRequestDate(rentingRequest.getRentingRequestDate())
-                .effectiveDateRenting(rentingRequest.getEffectiveDateRenting())
-                .resolutionDate(rentingRequest.getResolutionDate())
-                .numberOfVehicles(rentingRequest.getNumberOfVehicles())
-                .investment(rentingRequest.getInvestment())
-                .fee(rentingRequest.getFee())
-                .deadline(rentingRequest.getDeadline())
-                .resolution(rentingRequest.getResolution())
-                .build();
-    }
 
-    private RentingRequest convertToEntity(RentingRequestDto rentingRequestDto) throws EmptyRentingRequestException {
-        if (rentingRequestDto == null) throw new EmptyRentingRequestException();
-        return RentingRequest.builder()
-                .clientId(rentingRequestDto.getClientId())
-                .rentingRequestDate(rentingRequestDto.getRentingRequestDate())
-                .effectiveDateRenting(rentingRequestDto.getEffectiveDateRenting())
-                .resolutionDate(rentingRequestDto.getResolutionDate())
-                .numberOfVehicles(rentingRequestDto.getNumberOfVehicles())
-                .investment(rentingRequestDto.getInvestment())
-                .fee(rentingRequestDto.getFee())
-                .deadline(rentingRequestDto.getDeadline())
-                .resolution(rentingRequestDto.getResolution())
-                .build();
-    }
-
-    private RentingRequestDto safeConvertToDto(RentingRequest rentingRequest) {
-        try {
-            return convertToDto(rentingRequest);
-        } catch (EmptyRentingRequestException e) {
-            return null;
-        }
-    }
-
-    private List<RentingRequestDto> convertToDtoList(List<RentingRequest> rentingRequests) {
-        return rentingRequests.stream().map(this::safeConvertToDto).toList();
-    }
 }
