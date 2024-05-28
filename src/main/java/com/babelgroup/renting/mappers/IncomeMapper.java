@@ -1,25 +1,33 @@
 package com.babelgroup.renting.mappers;
 
 import com.babelgroup.renting.entities.Employee;
+import com.babelgroup.renting.entities.Freelance;
 import com.babelgroup.renting.entities.Salaried;
+import com.babelgroup.renting.entities.SalariedIncome;
 import com.babelgroup.renting.entities.dtos.ClientUpdateDto;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 @Mapper
-public interface EmployeeMapper {
+public interface IncomeMapper {
 
+    @Insert("INSERT INTO INGUNIV_SCORING.RENTA (ID_CLIENTE, ANIO_SALARIO, INGRESOS_NETOS, " +
+            "CUENTA_PROPIA, ANTIGUEDAD_EMPLEO, CIF_EMPRESA) " +
+            "VALUES (#{clientId}, #{salariedIncome.salaryYear}, #{salariedIncome.netIncome}, 0 " +
+            "#{salaried.jobAntiquity}, #{salaried.cif})")
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "ID_CLIENTE")
+    void createSalaried(Salaried salaried, SalariedIncome salariedIncome);
 
-    @Select("SELECT AVG(a.ingresos_netos) + AVG(ra.INGRESOS_NETO)\n" +
-            "FROM cliente c\n" +
-            "LEFT JOIN empleado e ON c.ID_CLIENTE  = e.ID_CLIENTE\n" +
-            "LEFT JOIN autonomo a ON e.ID_EMPLEADO = a.ID_EMPLEADO\n" +
-            "LEFT JOIN ASALARIADO asa ON e.ID_EMPLEADO = asa.ID_EMPLEADO \n" +
-            "LEFT JOIN renta_asalariado ra ON asa.ID_ASALARIADO = ra.ID_ASALARIADO \n" +
-            "WHERE c.ID_CLIENTE = :clientId AND a.ANIO_SALARIO >= (:year - 3) AND a.ANIO_SALARIO <= :year AND ra.ANIO_SALARIO >= (:year - 3) AND ra.ANIO_SALARIO <= :year\n" +
-            "GROUP BY a.ID_EMPLEADO")
+    @Insert("INSERT INTO INGUNIV_SCORING.RENTA ID_CLIENTE, ANIO_SALARIO, INGRESOS_NETOS, INGRESOS_BRUTOS" +
+            "CUENTA_PROPIA) " +
+            "VALUES (#{clientId}, #{freelance.yearSalary}, #{freelance.netIncome}, #{freelance.grossIncome}, 1")
+    void createFreelance(Freelance freelance);
+
+    @Select("SELECT AVG(r.INGRESOS_NETOS)\n" +
+            "FROM RENTA r\n" +
+            "WHERE r.ID_CLIENTE = :clientId AND r.ANIO_SALARIO >= (:year - 3) AND r.ANIO_SALARIO <= :year\n" +
+            "GROUP BY r.ID_CLIENTE")
     Long getAverageSalary(Long clientId, int year);
+
 
     @Select("SELECT a.*\n" +
             "FROM asalariado a\n" +
