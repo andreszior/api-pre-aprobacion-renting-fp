@@ -65,12 +65,6 @@ public class RentingRequestServiceImpl implements RentingRequestService {
         return rentingRequestMapper.findRentingRequestsByStatus(rentingRequestStatus);
     }
 
-    @Override
-    public boolean deleteRentingRequest(long rentingRequestId) throws RentingRequestNotFoundException {
-        RentingRequest rentingRequest = rentingRequestMapper.findRentingRequestById(rentingRequestId);
-        if (rentingRequest == null) throw new RentingRequestNotFoundException();
-        return rentingRequestMapper.deleteRentingRequest(rentingRequestId) > 0;
-    }
 
     private RentingRequestDto convertToDto(RentingRequest rentingRequest) throws EmptyRentingRequestException {
         if (rentingRequest == null) throw new EmptyRentingRequestException();
@@ -110,18 +104,23 @@ public class RentingRequestServiceImpl implements RentingRequestService {
         }
     }
 
-    public Boolean canDeleteRequestWithDeniedStatus(Long rentingRequestId) {
+    public Boolean canDeleteRequestWithDeniedStatus(long rentingRequestId) {
         return this.rentingRequestMapper.numberOfDeniedRequest(rentingRequestId) <= 0;
     }
 
-    public Boolean deleteRequest(Long rentingRequestId) {
+    public boolean deleteRentingRequest(long rentingRequestId) {
         if (canDeleteRequestWithDeniedStatus(rentingRequestId)) {
-            this.rentingRequestMapper.deleteSolicitud(rentingRequestId);
+            this.rentingRequestMapper.deleteRentingRequest(rentingRequestId);
             return true;
         }
         return false;
     }
-
+    /*@Override
+    public boolean deleteRentingRequest(long rentingRequestId) throws RentingRequestNotFoundException {
+        RentingRequest rentingRequest = rentingRequestMapper.findRentingRequestById(rentingRequestId);
+        if (rentingRequest == null) throw new RentingRequestNotFoundException();
+        return rentingRequestMapper.deleteRentingRequest(rentingRequestId) > 0;
+    }*/
 
     @Override
     public List<RentingRequestDto> convertToDtoList(List<RentingRequest> rentingRequests) {
