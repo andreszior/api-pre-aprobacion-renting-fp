@@ -3,7 +3,7 @@ package com.babelgroup.renting.services.rules.approbations.impl;
 import com.babelgroup.renting.entities.RentingRequest;
 import com.babelgroup.renting.entities.Salaried;
 import com.babelgroup.renting.mappers.InformaMapper;
-import com.babelgroup.renting.mappers.EmployeeMapper;
+import com.babelgroup.renting.mappers.IncomeMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -15,20 +15,20 @@ import static org.mockito.Mockito.when;
 class NIFRuleTest {
 
     private NIFRule sut;
-    private EmployeeMapper employeeMapper;
+    private IncomeMapper incomeMapper;
     private InformaMapper informaMapper;
 
     @BeforeEach
     void setUp() {
-        employeeMapper = Mockito.mock(EmployeeMapper.class);
+        incomeMapper = Mockito.mock(IncomeMapper.class);
         informaMapper = Mockito.mock(InformaMapper.class);
-        sut = new NIFRule(employeeMapper, informaMapper);
+        sut = new NIFRule(incomeMapper, informaMapper);
 
         Salaried salaried = Salaried.builder().build();
         salaried.setCif("CIF");
 
-        when(employeeMapper.isSalaried(1L)).thenReturn(null);
-        when(employeeMapper.isSalaried(2L)).thenReturn(salaried);
+        when(incomeMapper.isSalaried(1L)).thenReturn(null);
+        when(incomeMapper.isSalaried(2L)).thenReturn(salaried);
     }
 
     @Test

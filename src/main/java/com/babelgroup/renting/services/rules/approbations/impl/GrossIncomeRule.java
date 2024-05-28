@@ -1,7 +1,7 @@
 package com.babelgroup.renting.services.rules.approbations.impl;
 
 import com.babelgroup.renting.entities.RentingRequest;
-import com.babelgroup.renting.mappers.EmployeeMapper;
+import com.babelgroup.renting.mappers.IncomeMapper;
 import com.babelgroup.renting.services.rules.approbations.ApprobationRule;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,7 +12,7 @@ import java.util.TimeZone;
 @RequiredArgsConstructor
 @Service
 public class GrossIncomeRule implements ApprobationRule {
-    private final EmployeeMapper mapper;
+    private final IncomeMapper mapper;
 
     @Override
     public boolean approve(RentingRequest request) {

@@ -1,12 +1,10 @@
 package com.babelgroup.renting.services.impl;
 
 import com.babelgroup.renting.entities.*;
-import com.babelgroup.renting.entities.dtos.ClientDto;
 import com.babelgroup.renting.entities.dtos.ClientUpdateDto;
 import com.babelgroup.renting.mappers.ClientMapper;
 import com.babelgroup.renting.mappers.CountryMapper;
-import com.babelgroup.renting.mappers.EmployeeMapper;
-import com.babelgroup.renting.mappers.ProvinceMapper;
+import com.babelgroup.renting.mappers.IncomeMapper;
 import com.babelgroup.renting.services.ClientService;
 import org.springframework.stereotype.Service;
 
@@ -15,12 +13,12 @@ public class ClientServiceImpl implements ClientService {
 
 
     private final ClientMapper clientMapper;
-    private final EmployeeMapper employeeMapper;
+    private final IncomeMapper incomeMapper;
     private final CountryMapper countryMapper;
 
-    public ClientServiceImpl(ClientMapper clientMapper, EmployeeMapper employeeMapper, CountryMapper countryMapper) {
+    public ClientServiceImpl(ClientMapper clientMapper, IncomeMapper incomeMapper, CountryMapper countryMapper) {
         this.clientMapper = clientMapper;
-        this.employeeMapper = employeeMapper;
+        this.incomeMapper = incomeMapper;
         this.countryMapper = countryMapper;
     }
 
@@ -38,12 +36,12 @@ public class ClientServiceImpl implements ClientService {
         }
         Country country = countryMapper.getCountry(clientUpdateDto.getCountry());
         client.setCountry(country);
-        Long employeeId = employeeMapper.getEmployeeByClient(clientId);
-        Long salariedId = employeeMapper.getSalariedId(employeeId);
+        Long employeeId = incomeMapper.getEmployeeByClient(clientId);
+        Long salariedId = incomeMapper.getSalariedId(employeeId);
         clientUpdateDto.setSalariedId(salariedId);
 
-        return this.clientMapper.updateClient(client) && this.employeeMapper.updateSalariedSalary(clientUpdateDto)
-                && this.employeeMapper.updateSalariedValues(clientUpdateDto);
+        return this.clientMapper.updateClient(client) && this.incomeMapper.updateSalariedSalary(clientUpdateDto)
+                && this.incomeMapper.updateSalariedValues(clientUpdateDto);
     }
 
     @Override

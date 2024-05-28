@@ -1,7 +1,7 @@
 package com.babelgroup.renting.services.rules.approbations.impl;
 
 import com.babelgroup.renting.entities.RentingRequest;
-import com.babelgroup.renting.mappers.EmployeeMapper;
+import com.babelgroup.renting.mappers.IncomeMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -15,13 +15,13 @@ import static org.mockito.Mockito.when;
 
 class GrossIncomeRuleTest {
 
-    private EmployeeMapper mapper;
+    private IncomeMapper mapper;
     private GrossIncomeRule sut;
     private final static int CURRENT_YEAR = 2024;
 
     @BeforeEach
     void setUp() {
-        mapper = Mockito.mock(EmployeeMapper.class);
+        mapper = Mockito.mock(IncomeMapper.class);
         sut = new GrossIncomeRule(mapper);
     }
 
