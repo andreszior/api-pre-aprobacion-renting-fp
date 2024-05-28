@@ -35,8 +35,8 @@ public class ClientDto {
     private Date jobAntiquity;
     @Schema(description = "Año del salario", example = "2021")
     private Integer salaryYear;
-    @Schema(description = "ID del empleado", example = "1")
-    private Integer employeeId;
+/*    @Schema(description = "ID del empleado", example = "1")
+    private Integer employeeId;*/
     @Schema(description = "CIF de la empresa", example = "112345678")
     private String companyCif;
     @Schema(description = "Estado de eliminación lógica del cliente", example = "0")

@@ -46,8 +46,8 @@ public interface RentingRequestMapper {
             "CUOTA as fee, " +
             "PLAZO as deadline, " +
             "RESULTADO as resolution " +
-            "FROM SOLICITUD " +
-            "WHERE ID_SOLICITUD = #{rentalRequestId}")
+            "FROM INGUNIV_SCORING.SOLICITUD " +
+            "WHERE ID_SOLICITUD = #{rentingRequestId}")
     RentingRequest findRentingRequestById(@Param("rentingRequestId") long rentingRequestId) throws RentingRequestNotFoundException;
 
     @Select("SELECT * FROM SOLICITUD " +

@@ -3,12 +3,10 @@ package com.babelgroup.renting.services.impl;
 import com.babelgroup.renting.entities.*;
 import com.babelgroup.renting.entities.dtos.ClientDto;
 import com.babelgroup.renting.entities.dtos.ClientUpdateDto;
-import com.babelgroup.renting.logger.Log;
 import com.babelgroup.renting.mappers.ClientMapper;
-import com.babelgroup.renting.mappers.CountryMapper;
-import com.babelgroup.renting.mappers.IncomeMapper;
 import com.babelgroup.renting.services.ClientService;
 import com.babelgroup.renting.services.CountryService;
+import com.babelgroup.renting.services.IncomeService;
 import com.babelgroup.renting.services.ProvinceService;
 import org.springframework.stereotype.Service;
 
@@ -18,28 +16,49 @@ public class ClientServiceImpl implements ClientService {
 
     private final ClientMapper clientMapper;
     private final ProvinceService provinceService;
-    private final IncomeMapper incomeMapper;
-    private final CountryMapper countryMapper;
+    private final IncomeService incomeService;
+    private final CountryService countryService;
 
-    public ClientServiceImpl(ClientMapper clientMapper, IncomeMapper incomeMapper, CountryMapper countryMapper, ProvinceService provinceService) {
+    public ClientServiceImpl(ClientMapper clientMapper, IncomeService incomeService, CountryService countryService, ProvinceService provinceService) {
 
         this.clientMapper = clientMapper;
-        this.incomeMapper = incomeMapper;
-        this.countryMapper = countryMapper;
+        this.incomeService = incomeService;
+        this.countryService = countryService;
         this.provinceService = provinceService;
     }
 
     @Override
     public Client createClient(ClientDto clientDto) {
         Client client = buildClientEntity(clientDto);
-        Employee employee = buildEmployeeEntity(client);
+        this.clientMapper.createClient(client);
+
+        if (isFreelance(clientDto)) {
+            Freelance freelance = Freelance.builder()
+                    .clientId(client.getId())
+                    .grossIncome(clientDto.getGrossIncome())
+                    .netIncome(clientDto.getNetIncome())
+                    .yearSalary(clientDto.getSalaryYear())
+                    .build();
+            incomeService.createFreelance(freelance);
+
+        } else if (isSalaried(clientDto)) {
+            Salaried salaried = Salaried.builder()
+                    .clientId(client.getId())
+                    .jobAntiquity(clientDto.getJobAntiquity())
+                    .cif(clientDto.getCompanyCif())
+                    .build();
+            incomeService.createSalaried(salaried);
+        }
+
+       /* Employee employee = buildEmployeeEntity(client);
         createEmployee(employee);
 
         createSalariedEntries(clientDto, employee);
-        createFreelanceEntries(clientDto, employee);
-        this.clientMapper.createClient(client);
+        createFreelanceEntries(clientDto, employee);*/
         return client;
     }
+
+
 
     @Override
     public Boolean updateClient(long clientId, ClientUpdateDto clientUpdateDto) {
@@ -56,12 +75,13 @@ public class ClientServiceImpl implements ClientService {
         Province province = provinceService.getProvince(clientUpdateDto.getProvinceCode());
         client.setProvinceCode(province);
 
+        return this.clientMapper.updateClient(client);
+
 //        return this.clientMapper.updateClient(client) && this.employeeMapper.updateSalariedSalary(clientUpdateDto)
 //                && this.employeeMapper.updateSalariedValues(clientUpdateDto);
-        return false;
     }
 
-    @Override
+   /* @Override
     public Employee createEmployee(Employee employee) {
         this.clientMapper.createEmployee(employee);
         return employee;
@@ -83,11 +103,11 @@ public class ClientServiceImpl implements ClientService {
     public Freelance createFreelance(Freelance freelance) {
         this.clientMapper.createFreelance(freelance);
         return freelance;
-    }
+    }*/
 
     @Override
     public Boolean deleteClient(long clientId) {
-        return null;
+        return this.clientMapper.deleteClient(clientId);;
     }
 
     @Override
@@ -109,7 +129,8 @@ public class ClientServiceImpl implements ClientService {
                 .build();
     }
 
-    public Employee buildEmployeeEntity(Client client) {
+
+   /* public Employee buildEmployeeEntity(Client client) {
         return Employee.builder()
                 .id(client.getId())
                 .clientId(client.getId())
@@ -150,7 +171,7 @@ public class ClientServiceImpl implements ClientService {
             createFreelance(freelance);
             Log.logInfo("Registro cliente autónomo creado correctamente.");
         }
-    }
+    }*/
 
     public Boolean isFreelance(ClientDto clientDto) {
         return clientDto.getGrossIncome() != null && clientDto.getNetIncome() != null && clientDto.getSalaryYear() != null;

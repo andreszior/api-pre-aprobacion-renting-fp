@@ -1,6 +1,5 @@
 package com.babelgroup.renting.mappers;
 
-import com.babelgroup.renting.entities.Employee;
 import com.babelgroup.renting.entities.Freelance;
 import com.babelgroup.renting.entities.Salaried;
 import com.babelgroup.renting.entities.SalariedIncome;
@@ -14,10 +13,10 @@ public interface IncomeMapper {
 
     @Insert("INSERT INTO INGUNIV_SCORING.RENTA (ID_CLIENTE, ANIO_SALARIO, INGRESOS_NETOS, " +
             "CUENTA_PROPIA, ANTIGUEDAD_EMPLEO, CIF_EMPRESA) " +
-            "VALUES (#{clientId}, #{salariedIncome.salaryYear}, #{salariedIncome.netIncome}, 0 " +
+            "VALUES (#{clientId}, #{salaried.salaryYear}, #{salaried.netIncome}, 0, " +
             "#{salaried.jobAntiquity}, #{salaried.cif})")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "ID_CLIENTE")
-    void createSalaried(Salaried salaried, SalariedIncome salariedIncome);
+    void createSalaried(Salaried salaried);
 
     @Insert("INSERT INTO INGUNIV_SCORING.RENTA ID_CLIENTE, ANIO_SALARIO, INGRESOS_NETOS, INGRESOS_BRUTOS" +
             "CUENTA_PROPIA) " +
