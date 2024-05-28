@@ -5,7 +5,7 @@ import com.babelgroup.renting.entities.Country;
 import com.babelgroup.renting.entities.Province;
 import com.babelgroup.renting.mappers.ClientMapper;
 import com.babelgroup.renting.mappers.CountryMapper;
-import com.babelgroup.renting.mappers.EmployeeMapper;
+import com.babelgroup.renting.mappers.IncomeMapper;
 import com.babelgroup.renting.services.ClientService;
 import com.babelgroup.renting.services.impl.ClientServiceImpl;
 import org.junit.jupiter.api.Assertions;
@@ -16,7 +16,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -30,7 +29,7 @@ class ClientServiceTests {
 
     private ClientService sut;
     private ClientMapper clientMapper;
-    private EmployeeMapper employeeMapper;
+    private IncomeMapper incomeMapper;
     private CountryMapper countryMapper;
     @Captor
     private ArgumentCaptor<Client> accountArgumentCaptor;
@@ -38,9 +37,9 @@ class ClientServiceTests {
     @BeforeEach()
     void setUp() {
         clientMapper = Mockito.mock(ClientMapper.class);
-        employeeMapper = Mockito.mock(EmployeeMapper.class);
+        incomeMapper = Mockito.mock(IncomeMapper.class);
         countryMapper = Mockito.mock(CountryMapper.class);
-        sut = new ClientServiceImpl(clientMapper, employeeMapper, countryMapper);
+        sut = new ClientServiceImpl(clientMapper, incomeMapper, countryMapper);
     }
 
     @Test

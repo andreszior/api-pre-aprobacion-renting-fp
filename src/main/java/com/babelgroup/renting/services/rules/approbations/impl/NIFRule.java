@@ -3,7 +3,7 @@ package com.babelgroup.renting.services.rules.approbations.impl;
 import com.babelgroup.renting.entities.RentingRequest;
 import com.babelgroup.renting.entities.Salaried;
 import com.babelgroup.renting.mappers.InformaMapper;
-import com.babelgroup.renting.mappers.EmployeeMapper;
+import com.babelgroup.renting.mappers.IncomeMapper;
 import com.babelgroup.renting.services.rules.approbations.ApprobationRule;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,12 +13,12 @@ import org.springframework.stereotype.Service;
 public class NIFRule implements ApprobationRule {
 
     private static final float TAX_LIMIT = 150000;
-    private final EmployeeMapper employeeMapper;
+    private final IncomeMapper incomeMapper;
     private final InformaMapper informaMapper;
 
     @Override
     public boolean approve(RentingRequest request) {
-        Salaried salaried = employeeMapper.isSalaried(request.getClientId());
+        Salaried salaried = incomeMapper.isSalaried(request.getClientId());
 
         if (salaried == null) {
             return true;

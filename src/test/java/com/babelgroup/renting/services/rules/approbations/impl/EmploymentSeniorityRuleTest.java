@@ -1,7 +1,7 @@
 package com.babelgroup.renting.services.rules.approbations.impl;
 
 import com.babelgroup.renting.entities.RentingRequest;
-import com.babelgroup.renting.mappers.EmployeeMapper;
+import com.babelgroup.renting.mappers.IncomeMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,14 +13,14 @@ import static org.mockito.Mockito.when;
 
 public class EmploymentSeniorityRuleTest {
 
-    private EmployeeMapper mapper;
+    private IncomeMapper mapper;
     private EmploymentSeniorityRule sut;
 
     private RentingRequest request;
 
     @BeforeEach
     void setUp() {
-        mapper = Mockito.mock(EmployeeMapper.class);
+        mapper = Mockito.mock(IncomeMapper.class);
         sut = new EmploymentSeniorityRule(mapper);
         request = RentingRequest.builder().build();
         request.setClientId(1L);

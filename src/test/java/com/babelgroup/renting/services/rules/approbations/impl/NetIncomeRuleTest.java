@@ -2,7 +2,7 @@ package com.babelgroup.renting.services.rules.approbations.impl;
 
 import com.babelgroup.renting.entities.RentingRequest;
 import com.babelgroup.renting.entities.Vehicle;
-import com.babelgroup.renting.mappers.EmployeeMapper;
+import com.babelgroup.renting.mappers.IncomeMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -18,14 +18,14 @@ import static org.mockito.Mockito.when;
 class NetIncomeRuleTest {
 
     private NetIncomeRule sut;
-    private EmployeeMapper employeeMapper;
+    private IncomeMapper incomeMapper;
 
     @BeforeEach
     void setUp() {
-        employeeMapper = Mockito.mock(EmployeeMapper.class);
-        when(employeeMapper.getAverageSalary(anyLong(), anyInt())).thenReturn(10000L);
+        incomeMapper = Mockito.mock(IncomeMapper.class);
+        when(incomeMapper.getAverageSalary(anyLong(), anyInt())).thenReturn(10000L);
 
-        sut = new NetIncomeRule(employeeMapper);
+        sut = new NetIncomeRule(incomeMapper);
     }
 
     @Test

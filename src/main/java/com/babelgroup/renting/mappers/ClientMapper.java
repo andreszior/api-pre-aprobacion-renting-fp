@@ -56,7 +56,7 @@ public interface ClientMapper {
             "AND pc.fecha_baja < CURRENT_DATE()")
     boolean isNewClient(Long clientId);
 
-    @Select("SELECT COUNT(*) = 0" +
+    @Select("SELECT COUNT(*) <> 0" +
             "FROM Cliente c" +
             "INNER JOIN solicitud s ON c.ID_CLIENTE = s.ID_CLIENTE" +
             "INNER JOIN garantia g ON G.ID_GARANTIA = s.ID_SOLICITUD" +
@@ -66,16 +66,17 @@ public interface ClientMapper {
     boolean isGuarantor(Long clientId);
 
 
-    @Select("SELECT COUNT(*) " +
+    @Select("SELECT c.ID_CLIENTE, TRUNC((SYSDATE - c.FECHA_NACIMIENTO) / 365.25, 0) " +
             "FROM CLIENTE c " +
-            "WHERE c.FECHA_NACIMIENTO > TRUNC(ADD_MONTHS(SYSDATE, -12 * 18)) AND c.ID_CLIENTE = :clienteId;")
-    int getUnderageClient(Long clienteId);
+            "WHERE c.ID_CLIENTE = :clienteId;")
+    int getAgeClient(Long clienteId);
 
     @Insert("INSERT INTO INGUNIV_SCORING.CLIENTE (DNI, NOMBRE, APELLIDO, SEGUNDO_APELLIDO, RATING, FECHA_NACIMIENTO, NACIONALIDAD, COD_PROVINCIA) " +
             "VALUES (#{dni}, #{name}, #{lastnameFirst}, #{lastnameSecond}, #{rating}, #{birthdate}, #{country.id}, #{provinceCode.id})")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "ID_CLIENTE")
     void createClient(Client client);
 
+    /*
     @Insert("INSERT INTO INGUNIV_SCORING.EMPLEADO (ID_EMPLEADO, ID_CLIENTE) " +
             "VALUES (#{id}, #{clientId})")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "ID_EMPLEADO")
@@ -94,11 +95,14 @@ public interface ClientMapper {
             "VALUES (#{employeeId}, #{yearSalary}, #{netIncome}, #{grossIncome})")
     void createFreelance(Freelance freelance);
 
+     */
+
     @Select("SELECT c.DNI FROM INGUNIV_SCORING.CLIENTE c WHERE c.DNI = #{dni}")
     String getClient(@Param("dni") String dni);
 
     Client getClientById(long clientId);
 
-    @Update("UPATE INGUNIV_SCORING.CLIENTE c SET c.NACIONALIDAD = #{country.id} WHERE c.id_cliente = #{id}")
+    @Update("UPATE INGUNIV_SCORING.CLIENTE c SET c.NOMBRE = #{name}, c.APELLIDO = #{lastnameFirst}, " +
+            "c.SEGUNDO_APELLIDO = #{lastnameSecond}, c.NACIONALIDAD = #{country.id} WHERE c.id_cliente = #{id}")
     boolean updateClient(Client client);
 }

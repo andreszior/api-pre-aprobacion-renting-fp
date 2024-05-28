@@ -6,7 +6,7 @@ import com.babelgroup.renting.entities.dtos.ClientUpdateDto;
 
 public interface ClientService {
 
-    Client createClient(Client client);
+    Client createClient(ClientDto clientDto);
 
     Boolean updateClient(long clientId, ClientUpdateDto client);
 

@@ -6,7 +6,7 @@ import com.babelgroup.renting.entities.Province;
 import com.babelgroup.renting.entities.dtos.ClientUpdateDto;
 import com.babelgroup.renting.mappers.ClientMapper;
 import com.babelgroup.renting.mappers.CountryMapper;
-import com.babelgroup.renting.mappers.EmployeeMapper;
+import com.babelgroup.renting.mappers.IncomeMapper;
 import com.babelgroup.renting.services.ClientService;
 import com.babelgroup.renting.services.impl.ClientServiceImpl;
 import org.junit.jupiter.api.Assertions;
@@ -34,14 +34,14 @@ class UpdateClientTests {
     private ClientUpdateDto clientDto;
     private Country country;
     private Province provinceCode;
-    private EmployeeMapper employeeMapper;
+    private IncomeMapper incomeMapper;
 
     @BeforeEach()
     void setUp() {
         clientMapper = Mockito.mock(ClientMapper.class);
-        employeeMapper = Mockito.mock(EmployeeMapper.class);
+        incomeMapper = Mockito.mock(IncomeMapper.class);
         countryMapper = Mockito.mock(CountryMapper.class);
-        sut = new ClientServiceImpl(clientMapper, employeeMapper, countryMapper);
+        sut = new ClientServiceImpl(clientMapper, incomeMapper, countryMapper);
     }
 
     @Test
@@ -57,10 +57,10 @@ class UpdateClientTests {
         //When
         when(countryMapper.getCountry("España")).thenReturn(this.country);
         when(clientMapper.getClientById(anyLong())).thenReturn(any());
-        when(employeeMapper.updateSalariedSalary(clientDto)).thenReturn(true);
-        when(employeeMapper.updateSalariedValues(clientDto)).thenReturn(true);
-        when(employeeMapper.getSalariedId(anyLong())).thenReturn((long) 1);
-        when(employeeMapper.getEmployeeByClient(anyLong())).thenReturn((long) 1);
+        when(incomeMapper.updateSalariedSalary(clientDto)).thenReturn(true);
+        when(incomeMapper.updateSalariedValues(clientDto)).thenReturn(true);
+        when(incomeMapper.getSalariedId(anyLong())).thenReturn((long) 1);
+        when(incomeMapper.getEmployeeByClient(anyLong())).thenReturn((long) 1);
         sut.updateClient((long) 1, clientDto);
 
         //Then
@@ -82,10 +82,10 @@ class UpdateClientTests {
 
         //When
         when(countryMapper.getCountry("Portugal")).thenReturn(this.country);
-        when(employeeMapper.updateSalariedSalary(clientDto)).thenReturn(true);
-        when(employeeMapper.updateSalariedValues(clientDto)).thenReturn(true);
-        when(employeeMapper.getSalariedId(anyLong())).thenReturn((long) 1);
-        when(employeeMapper.getEmployeeByClient(anyLong())).thenReturn((long) 1);
+        when(incomeMapper.updateSalariedSalary(clientDto)).thenReturn(true);
+        when(incomeMapper.updateSalariedValues(clientDto)).thenReturn(true);
+        when(incomeMapper.getSalariedId(anyLong())).thenReturn((long) 1);
+        when(incomeMapper.getEmployeeByClient(anyLong())).thenReturn((long) 1);
         sut.updateClient((long) 1, clientDto);
 
         //Then
