@@ -65,6 +65,11 @@ public interface ClientMapper {
             "AND s.resultado = 'Aprobada con garantías'")
     boolean isGuarantor(Long clientId);
 
+    @Select("SELECT COUNT (*)" +
+            "FROM Cliente c" +
+            "INNER JOIN solicitud s on ID_CLIENTE = s.ID_CLIENTE" +
+            "WHERE c.ID_Cliente = :clientId")
+    int getNumberOfExistingRequest(Long clientId);
 
     @Select("SELECT c.ID_CLIENTE, TRUNC((SYSDATE - c.FECHA_NACIMIENTO) / 365.25, 0) " +
             "FROM CLIENTE c " +
@@ -75,6 +80,9 @@ public interface ClientMapper {
             "VALUES (#{dni}, #{name}, #{lastnameFirst}, #{lastnameSecond}, #{rating}, #{birthdate}, #{country.id}, #{provinceCode.id})")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "ID_CLIENTE")
     void createClient(Client client);
+
+    @Update("UPDATE CLIENTE SET BORRADO_LOGICO = 1 WHERE ID_CLIENTE = #{clienteId}")
+    void deleteClient(@Param("clienteId") Long clienteId);
 
     /*
     @Insert("INSERT INTO INGUNIV_SCORING.EMPLEADO (ID_EMPLEADO, ID_CLIENTE) " +

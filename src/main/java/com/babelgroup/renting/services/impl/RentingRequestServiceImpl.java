@@ -15,7 +15,8 @@ import java.util.List;
 public class RentingRequestServiceImpl implements RentingRequestService {
     private final RentingRequestMapper rentingRequestMapper;
     private final PreApprobationService preApprobationService;
-    public RentingRequestServiceImpl(RentingRequestMapper rentingRequestMapper, PreApprobationService preApprobationService){
+
+    public RentingRequestServiceImpl(RentingRequestMapper rentingRequestMapper, PreApprobationService preApprobationService) {
         this.rentingRequestMapper = rentingRequestMapper;
         this.preApprobationService = preApprobationService;
     }
@@ -40,21 +41,21 @@ public class RentingRequestServiceImpl implements RentingRequestService {
     }
 
     @Override
-    public RentingRequest getRentingRequest(long rentingRequestId)  throws RentingRequestNotFoundException  {
+    public RentingRequest getRentingRequest(long rentingRequestId) throws RentingRequestNotFoundException {
         RentingRequest rentingRequest = rentingRequestMapper.findRentingRequestById(rentingRequestId);
         if (rentingRequest == null) throw new RentingRequestNotFoundException();
         return rentingRequest;
     }
 
     @Override
-    public RentingRequestDto getRentingRequestDto(long rentingRequestId)  throws RentingRequestNotFoundException  {
+    public RentingRequestDto getRentingRequestDto(long rentingRequestId) throws RentingRequestNotFoundException {
         RentingRequest rentingRequest = rentingRequestMapper.findRentingRequestById(rentingRequestId);
         if (rentingRequest == null) throw new RentingRequestNotFoundException();
         RentingRequestDto dto = null;
         try {
             dto = convertToDto(rentingRequest);
-        } catch (Exception e){
-            System.err.println("Error al convertir a DTO -> getRentingRequestDto: "+e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Error al convertir a DTO -> getRentingRequestDto: " + e.getMessage());
         }
         return dto;
     }
@@ -108,6 +109,19 @@ public class RentingRequestServiceImpl implements RentingRequestService {
             return null;
         }
     }
+
+    public Boolean canDeleteRequestWithDeniedStatus(Long rentingRequestId) {
+        return this.rentingRequestMapper.numberOfDeniedRequest(rentingRequestId) <= 0;
+    }
+
+    public Boolean deleteRequest(Long rentingRequestId) {
+        if (canDeleteRequestWithDeniedStatus(rentingRequestId)) {
+            this.rentingRequestMapper.deleteSolicitud(rentingRequestId);
+            return true;
+        }
+        return false;
+    }
+
 
     @Override
     public List<RentingRequestDto> convertToDtoList(List<RentingRequest> rentingRequests) {
