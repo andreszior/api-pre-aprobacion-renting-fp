@@ -38,10 +38,10 @@ public interface IncomeMapper {
             "AND r.CUENTA_PROPIA = 0 ORDER BY r.ANIO_SALARIO DESC FETCH FIRST 1 ROW ONLY;")
     Date getEploymentYear(Long clientId);
 
-    @Select("SELECT AVG(a.INGRESOS_BRUTOS) AS MEDIA_INGRESOS_BRUTOS\n" +
-            "FROM cliente c\n " +
-            "WHERE c.ID_CLIENTE = :clientId\n " +
-            "AND c.ANIO_SALARIO BETWEEN (:year - 2) AND :year\n " +
+    @Select("SELECT AVG(r.INGRESOS_BRUTOS) AS MEDIA_INGRESOS_BRUTOS\n" +
+            "FROM RENTA r\n " +
+            "WHERE r.ID_CLIENTE = :clientId\n " +
+            "AND r.ANIO_SALARIO BETWEEN (:year - 2) AND :year\n " +
             "GROUP BY c.ID_CLIENTE;")
     Long getGrossIncome(Long clientId, int year);
 

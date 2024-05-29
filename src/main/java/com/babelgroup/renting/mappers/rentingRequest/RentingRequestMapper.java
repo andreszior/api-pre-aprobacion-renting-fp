@@ -58,6 +58,7 @@ public interface RentingRequestMapper {
             "FROM SOLICITUD" +
             "WHERE RESULTADO = Denegada AND ID_SOLICITUD = #{solicitudId};")
     int numberOfDeniedRequest(@Param ("solicitudId") Long solicitudId);
+
     @Update("UPDATE SOLICITUD SET BORRADO_LOGICO = 1 WHERE ID_SOLICITUD = #{solicitudId}")
     void deleteRentingRequest(@Param("solicitudId") Long solicitudId);
 
