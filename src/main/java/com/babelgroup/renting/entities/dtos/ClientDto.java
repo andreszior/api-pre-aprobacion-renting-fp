@@ -26,7 +26,7 @@ public class ClientDto {
     private String country;
     @Schema(description = "Código de provincia del cliente", example = "28")
     private String provinceCode;
-    @Schema(description = "Ingresos netos anualesdel cliente", example = "30000.00")
+    @Schema(description = "Ingresos netos anuales del cliente", example = "30000.00")
     private Double netIncome;
     @Schema(description = "Ingresos brutos anuales del cliente", example = "40000.00")
     private Double grossIncome;

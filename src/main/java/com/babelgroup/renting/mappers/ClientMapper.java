@@ -60,9 +60,9 @@ public interface ClientMapper {
             "AND s.resultado = 'Aprobada con garantías'")
     boolean isGuarantor(Long clientId);
 
-    @Select("SELECT COUNT (*)" +
+    @Select("SELECT COUNT (*) " +
             "FROM Cliente c " +
-            "INNER JOIN solicitud s on ID_CLIENTE = s.ID_CLIENTE " +
+            "INNER JOIN solicitud s on c.ID_CLIENTE = s.ID_CLIENTE " +
             "WHERE c.ID_Cliente = :clientId")
     int getNumberOfExistingRequest(Long clientId);
 
@@ -71,8 +71,10 @@ public interface ClientMapper {
             "WHERE c.ID_CLIENTE = :clienteId;")
     int getAgeClient(Long clienteId);
 
-    @Insert("INSERT INTO INGUNIV_SCORING.CLIENTE (DNI, NOMBRE, APELLIDO, SEGUNDO_APELLIDO, RATING, FECHA_NACIMIENTO, NACIONALIDAD, COD_PROVINCIA) " +
-            "VALUES (#{dni}, #{name}, #{lastnameFirst}, #{lastnameSecond}, #{rating}, #{birthdate}, #{country.id}, #{provinceCode.id})")
+    @Insert("INSERT INTO INGUNIV_SCORING.CLIENTE (DNI, NOMBRE, APELLIDO, SEGUNDO_APELLIDO, RATING, FECHA_NACIMIENTO, " +
+            "NACIONALIDAD, COD_PROVINCIA) " +
+            "VALUES (#{dni}, #{name}, #{lastnameFirst}, #{lastnameSecond}, #{rating}, #{birthdate}, " +
+            "#{country.id}, #{provinceCode.id})")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "ID_CLIENTE")
     void createClient(Client client);
 
@@ -85,6 +87,6 @@ public interface ClientMapper {
     Client getClientById(long clientId);
 
     @Update("UPDATE INGUNIV_SCORING.CLIENTE c SET c.NOMBRE = #{name}, c.APELLIDO = #{lastnameFirst}, " +
-            "c.SEGUNDO_APELLIDO = #{lastnameSecond}, c.NACIONALIDAD = #{country.id}, c.COD_PROVINCIA = #{provinceCode} WHERE c.id_cliente = #{id}")
+            "c.SEGUNDO_APELLIDO = #{lastnameSecond}, c.NACIONALIDAD = #{country.id}, c.COD_PROVINCIA = #{provinceCode.id} WHERE c.id_cliente = #{id}")
     boolean updateClient(Client client);
 }
