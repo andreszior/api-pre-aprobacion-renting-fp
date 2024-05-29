@@ -6,7 +6,11 @@ import com.babelgroup.renting.services.rules.approbations.ApprobationRule;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.Duration;
+import java.time.LocalDate;
 import java.time.Year;
+import java.util.Date;
 
 @RequiredArgsConstructor
 @Service
@@ -16,7 +20,8 @@ public class EmploymentSeniorityRule implements ApprobationRule {
 
     @Override
     public boolean approve(RentingRequest request) {
-        long startYear = incomeMapper.getEploymentYear(request.getClientId());
-        return Math.abs(Year.now().getValue() - startYear) >= 3;
+        Date startYear = incomeMapper.getEploymentYear(request.getClientId());
+        float seniority = Duration.between(LocalDate.now(), startYear.toInstant()).toDays()/365f;
+        return seniority >= 3;
     }
 }

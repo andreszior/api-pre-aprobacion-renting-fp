@@ -107,7 +107,12 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public Boolean deleteClient(long clientId) {
-        return this.clientMapper.deleteClient(clientId);;
+        try{
+            this.clientMapper.deleteClient(clientId);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override
