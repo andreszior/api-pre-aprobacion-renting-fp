@@ -17,7 +17,7 @@ public class UnderageClientRule implements DenegationRule {
     public boolean denegate(RentingRequest request) {
         try {
             int age = mapper.getAgeClient(request.getClientId());
-            return age <= 17;
+            return age < 18;
         } catch (Exception e) {
             Log.logError("Failed to get client age for client ID " + request.getClientId(), e);
             return false;
