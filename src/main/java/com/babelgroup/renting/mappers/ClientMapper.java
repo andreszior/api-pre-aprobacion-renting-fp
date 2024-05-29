@@ -76,7 +76,10 @@ public interface ClientMapper {
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "ID_CLIENTE")
     void createClient(Client client);
 
-    @Update("UPDATE CLIENTE SET BORRADO_LOGICO = 1 WHERE ID_CLIENTE = #{clienteId}")
+    @Update("UPDATE CLIENTE " +
+            "SET BORRADO_LOGICO = 1, " +
+            "FECHA_BORRADO = SYSDATE " +
+            "WHERE ID_CLIENTE = #{clienteId}")
     void deleteClient(@Param("clienteId") Long clienteId);
 
     @Select("SELECT c.DNI FROM INGUNIV_SCORING.CLIENTE c WHERE c.DNI = #{dni}")
