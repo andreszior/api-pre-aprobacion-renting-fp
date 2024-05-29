@@ -50,8 +50,6 @@ public class RentingRequestController {
 
         BindingResult bindingResult = new DataBinder(rentingRequestDto).getBindingResult();
         rentingRequestValidator.validate(rentingRequestDto, bindingResult);
-        rentingRequestValidator.validate(rentingRequestDto, bindingResult);
-
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(bindingResult.getAllErrors(), HttpStatus.BAD_REQUEST);
         }
