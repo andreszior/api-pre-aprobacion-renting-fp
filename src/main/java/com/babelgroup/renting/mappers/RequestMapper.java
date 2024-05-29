@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Update;
 @Mapper
 public interface RequestMapper {
 
-    @Update("UPDATE solicitud SET RESULTADO = #{result} WHERE ID_SOLICITUD = #{requestId}")
+    @Update("UPDATE SOLICITUD SET RESULTADO = #{result} WHERE ID_SOLICITUD = #{requestId}")
     void updateResult(int requestId, String result);
 
 }

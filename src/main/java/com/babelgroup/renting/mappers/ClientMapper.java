@@ -37,8 +37,8 @@ public interface ClientMapper {
             "WHERE c.ID_CLIENTE = :clientId AND ca.COD_CATEGORIA IN ('RT', 'FI');")
     int getAssignorOrCreditor(Long clienteId);
 
-    @Select("SELECT d.total_impago " +
-            "FROM DEUDA " +
+    @Select("SELECT d.IMPORTE_IMPAGO " +
+            "FROM DEUDA d " +
             "JOIN CLIENTE c ON d.NIF = c.DNI " +
             "WHERE c.id_cliente = :clientID")
     double getAmountDebt(Long clientId);
@@ -47,22 +47,22 @@ public interface ClientMapper {
             "FROM Producto_Contratado_Persona pcp " +
             "LEFT JOIN Producto_Contratado pc ON pcp.producto_contratado_id = pc.producto_contratado_id " +
             "LEFT JOIN Cliente c ON TRIM(LOWER(pcp.cif)) = TRIM(LOWER(c.dni)) " +
-            "WHERE c.ID_Cliente = :clientId" +
-            "AND pc.fecha_baja < CURRENT_DATE()")
+            "WHERE c.ID_Cliente = :clientId " +
+            "AND pc.fecha_baja < CURRENT_DATE")
     boolean isNewClient(Long clientId);
 
-    @Select("SELECT (CASE WHEN COUNT(*) <> 0 THEN 'TRUE' ELSE 'FALSE' END)" +
-            "FROM Cliente c" +
-            "INNER JOIN solicitud s ON c.ID_CLIENTE = s.ID_CLIENTE" +
-            "INNER JOIN garantia g ON G.ID_GARANTIA = s.ID_SOLICITUD" +
-            "WHERE c.ID_Cliente = :clientId" +
-            "AND g.NIF_AVALISTA = c.dni" +
+    @Select("SELECT (CASE WHEN COUNT(*) <> 0 THEN 'TRUE' ELSE 'FALSE' END) " +
+            "FROM Cliente c " +
+            "INNER JOIN solicitud s ON c.ID_CLIENTE = s.ID_CLIENTE " +
+            "INNER JOIN garantia g ON G.ID_GARANTIA = s.ID_SOLICITUD " +
+            "WHERE c.ID_Cliente = :clientId " +
+            "AND g.NIF_AVALISTA = c.dni " +
             "AND s.resultado = 'Aprobada con garantías'")
     boolean isGuarantor(Long clientId);
 
-    @Select("SELECT COUNT (*)" +
-            "FROM Cliente c" +
-            "INNER JOIN solicitud s on ID_CLIENTE = s.ID_CLIENTE" +
+    @Select("SELECT COUNT (*) " +
+            "FROM Cliente c " +
+            "INNER JOIN solicitud s on c.ID_CLIENTE = s.ID_CLIENTE " +
             "WHERE c.ID_Cliente = :clientId")
     int getNumberOfExistingRequest(Long clientId);
 
@@ -71,8 +71,10 @@ public interface ClientMapper {
             "WHERE c.ID_CLIENTE = :clienteId;")
     int getAgeClient(Long clienteId);
 
-    @Insert("INSERT INTO INGUNIV_SCORING.CLIENTE (DNI, NOMBRE, APELLIDO, SEGUNDO_APELLIDO, RATING, FECHA_NACIMIENTO, NACIONALIDAD, COD_PROVINCIA) " +
-            "VALUES (#{dni}, #{name}, #{lastnameFirst}, #{lastnameSecond}, #{rating}, #{birthdate}, #{country.id}, #{provinceCode.id})")
+    @Insert("INSERT INTO INGUNIV_SCORING.CLIENTE (DNI, NOMBRE, APELLIDO, SEGUNDO_APELLIDO, RATING, FECHA_NACIMIENTO, " +
+            "NACIONALIDAD, COD_PROVINCIA) " +
+            "VALUES (#{dni}, #{name}, #{lastnameFirst}, #{lastnameSecond}, #{rating}, #{birthdate}, " +
+            "#{country.id}, #{provinceCode.id})")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "ID_CLIENTE")
     void createClient(Client client);
 
@@ -88,6 +90,6 @@ public interface ClientMapper {
     Client getClientById(long clientId);
 
     @Update("UPDATE INGUNIV_SCORING.CLIENTE c SET c.NOMBRE = #{name}, c.APELLIDO = #{lastnameFirst}, " +
-            "c.SEGUNDO_APELLIDO = #{lastnameSecond}, c.NACIONALIDAD = #{country.id}, c.CODIGO_PROVINICA = #{provinceCode} WHERE c.id_cliente = #{id}")
+            "c.SEGUNDO_APELLIDO = #{lastnameSecond}, c.NACIONALIDAD = #{country.id}, c.COD_PROVINCIA = #{provinceCode.id} WHERE c.id_cliente = #{id}")
     boolean updateClient(Client client);
 }
