@@ -37,8 +37,8 @@ public interface ClientMapper {
             "WHERE c.ID_CLIENTE = :clientId AND ca.COD_CATEGORIA IN ('RT', 'FI');")
     int getAssignorOrCreditor(Long clienteId);
 
-    @Select("SELECT d.total_impago " +
-            "FROM DEUDA " +
+    @Select("SELECT d.IMPORTE_IMPAGO " +
+            "FROM DEUDA d " +
             "JOIN CLIENTE c ON d.NIF = c.DNI " +
             "WHERE c.id_cliente = :clientID")
     double getAmountDebt(Long clientId);
@@ -48,11 +48,11 @@ public interface ClientMapper {
             "LEFT JOIN Producto_Contratado pc ON pcp.producto_contratado_id = pc.producto_contratado_id " +
             "LEFT JOIN Cliente c ON TRIM(LOWER(pcp.cif)) = TRIM(LOWER(c.dni)) " +
             "WHERE c.ID_Cliente = :clientId " +
-            "AND pc.fecha_baja < CURRENT_DATE()")
+            "AND pc.fecha_baja < CURRENT_DATE")
     boolean isNewClient(Long clientId);
 
     @Select("SELECT (CASE WHEN COUNT(*) <> 0 THEN 'TRUE' ELSE 'FALSE' END) " +
-            "FROM Cliente c" +
+            "FROM Cliente c " +
             "INNER JOIN solicitud s ON c.ID_CLIENTE = s.ID_CLIENTE " +
             "INNER JOIN garantia g ON G.ID_GARANTIA = s.ID_SOLICITUD " +
             "WHERE c.ID_Cliente = :clientId " +
@@ -61,7 +61,7 @@ public interface ClientMapper {
     boolean isGuarantor(Long clientId);
 
     @Select("SELECT COUNT (*)" +
-            "FROM Cliente c" +
+            "FROM Cliente c " +
             "INNER JOIN solicitud s on ID_CLIENTE = s.ID_CLIENTE " +
             "WHERE c.ID_Cliente = :clientId")
     int getNumberOfExistingRequest(Long clientId);
