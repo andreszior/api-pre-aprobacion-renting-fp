@@ -4,6 +4,8 @@ import com.babelgroup.renting.entities.Freelance;
 import com.babelgroup.renting.entities.Salaried;
 import com.babelgroup.renting.entities.SalariedIncome;
 
+import java.util.Date;
+
 public interface IncomeService {
 
 
@@ -11,9 +13,7 @@ public interface IncomeService {
 
     void createSalaried(Salaried salaried);
 
-    long getClientSalary(Long idCliente);
-
-    long getEmploymentYear(Long idCliente);
+    Date getEmploymentYear(Long idCliente);
 
     long getGrossIncome(Long idCliente, int year);
 
