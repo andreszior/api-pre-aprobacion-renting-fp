@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Year;
+import java.time.ZoneId;
+import java.util.Date;
 
 @RequiredArgsConstructor
 @Service
@@ -16,7 +18,8 @@ public class EmploymentSeniorityRule implements ApprobationRule {
 
     @Override
     public boolean approve(RentingRequest request) {
-        long startYear = incomeMapper.getEploymentYear(request.getClientId());
-        return Math.abs(Year.now().getValue() - startYear) >= 3;
+        Date employmentStartDate = incomeMapper.getEploymentYear(request.getClientId());
+        int startYear = employmentStartDate.toInstant().atZone(ZoneId.systemDefault()).getYear();
+        return Year.now().getValue() - startYear >= 3;
     }
 }

@@ -17,7 +17,7 @@ public class GuarantorVerificationRule implements ApprobationRule {
 
         boolean isNewClient = clientMapper.isNewClient(clientId);
         boolean isGuarantor = clientMapper.isGuarantor(clientId);
-        if (isNewClient){
+        if (!isNewClient){
             return true;
         }else
             return !isGuarantor;
