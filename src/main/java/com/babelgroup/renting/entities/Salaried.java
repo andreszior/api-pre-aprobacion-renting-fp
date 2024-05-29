@@ -1,16 +1,13 @@
 package com.babelgroup.renting.entities;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.Date;
-@Builder
+
 @Data
-public class Salaried {
-    private Long clientId;
-    private Integer salaryYear;
-    private Double netIncome;
-    private boolean isSalaried;
+@SuperBuilder
+public class Salaried extends Income {
     private Date jobAntiquity;
     private String cif;
 

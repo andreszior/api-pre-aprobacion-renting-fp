@@ -82,9 +82,6 @@ public class ClientController {
             throw new ClientsAlreadyExistsException("El cliente ya existe");
         }
 
-        if (!isFreelance(clientDto) && !isSalaried(clientDto)) {
-            throw new ClientNotFreelanceOrSalariedException("El cliente debe ser freelance o asalariado");
-        }
         if (clientDto.getCountry() == null || clientDto.getProvinceCode() == null) {
             throw new CountryOrProvinceException("El cliente no tiene provincia o país");
         }
@@ -122,16 +119,6 @@ public class ClientController {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
-    }
-
-
-
-    public Boolean isFreelance(ClientDto clientDto) {
-        return clientDto.getGrossIncome() != null && clientDto.getNetIncome() != null && clientDto.getSalaryYear() != null;
-    }
-
-    public Boolean isSalaried(ClientDto clientDto) {
-        return clientDto.getJobAntiquity() != null && clientDto.getCompanyCif() != null && clientDto.getNetIncome() != null && clientDto.getSalaryYear() != null;
     }
 
 }

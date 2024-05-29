@@ -27,15 +27,9 @@ public class ClientValidator implements Validator {
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "birthdate", "birthdate.empty");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "country", "country.empty");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "provinceCode", "provinceCode.empty");
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "netIncome", "netIncome.empty");
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "salaryYear", "salaryYear.empty");
 
         if (client.getDni().length() != 9) {
             errors.rejectValue("dni", "dni.length", "El DNI debe tener 9 caracteres");
-        }
-
-        if(client.getCompanyCif() != null && client.getCompanyCif().toString().length() != 9){
-            errors.rejectValue("companyCif", "companyCif.length", "El CIF de la empresa debe tener 9 caracteres");
         }
 
         if(client.getCountry().length() != 3){
@@ -45,18 +39,6 @@ public class ClientValidator implements Validator {
         if(client.getProvinceCode().length() >= 2){
             Log.logInfo(String.valueOf(client.getProvinceCode().length()));
             errors.rejectValue("provinceCode", "provinceCode.length", "El código de provincia debe tener 2 caracteres");
-        }
-
-        if(client.getNetIncome() != null && client.getNetIncome() < 0){
-            errors.rejectValue("netIncome", "netIncome.invalid", "Los ingresos netos no pueden ser negativos");
-        }
-
-        if(client.getSalaryYear() != null && client.getSalaryYear() < 0){
-            errors.rejectValue("salaryYear", "salaryYear.invalid", "El año del salario no puede ser negativo");
-        }
-
-        if(client.getJobAntiquity() != null && (client.getJobAntiquity().after(new Date()))) {
-            errors.rejectValue("jobAntiquity", "jobAntiquity.invalid", "La fecha de antigüedad laboral no puede ser posterior a la fecha actual");
         }
 
         try{
