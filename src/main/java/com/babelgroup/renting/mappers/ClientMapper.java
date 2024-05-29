@@ -42,12 +42,7 @@ public interface ClientMapper {
             "JOIN CLIENTE c ON d.NIF = c.DNI " +
             "WHERE c.id_cliente = :clientID")
     double getAmountDebt(Long clientId);
-
-    @Select("SELECT c.fecha_nacimiento " +
-            "FROM CLIENTE C " +
-            "WHERE c.id_cliente=:clientId")
-    Date getBirthdate(Long clientId);
-
+    
     @Select("SELECT COUNT(*) = 0 " +
             "FROM Producto_Contratado_Persona pcp " +
             "LEFT JOIN Producto_Contratado pc ON pcp.producto_contratado_id = pc.producto_contratado_id " +

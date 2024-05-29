@@ -1,6 +1,7 @@
 package com.babelgroup.renting.services.rules.denegations.impl;
 
 import com.babelgroup.renting.entities.RentingRequest;
+import com.babelgroup.renting.logger.Log;
 import com.babelgroup.renting.mappers.ClientMapper;
 import com.babelgroup.renting.services.rules.denegations.DenegationRule;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,12 @@ public class AmountDebtsRule implements DenegationRule {
     private final ClientMapper mapper;
     @Override
     public boolean denegate(RentingRequest request) {
-        return mapper.getAmountDebt(request.getClientId()) >= request.getFee();
+        try {
+            double debtAmount = mapper.getAmountDebt(request.getClientId());
+            return debtAmount >= request.getFee();
+        } catch (Exception e) {
+            Log.logError("Failed to get amount of debt for client ID " + request.getClientId(), e);
+            return false;
+        }
     }
 }

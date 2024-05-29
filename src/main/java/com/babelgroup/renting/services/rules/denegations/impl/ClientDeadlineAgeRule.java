@@ -1,6 +1,7 @@
 package com.babelgroup.renting.services.rules.denegations.impl;
 
 import com.babelgroup.renting.entities.RentingRequest;
+import com.babelgroup.renting.logger.Log;
 import com.babelgroup.renting.mappers.ClientMapper;
 import com.babelgroup.renting.services.rules.denegations.DenegationRule;
 import lombok.RequiredArgsConstructor;
@@ -19,22 +20,14 @@ public class ClientDeadlineAgeRule implements DenegationRule {
 
     @Override
     public boolean denegate(RentingRequest request) {
-        Date birthdate = mapper.getBirthdate(request.getClientId());
-        int deadlineYears = (int) (request.getDeadline() / 12);
-        int totalTime = getAge(birthdate) + deadlineYears;
-        return totalTime >= 80;
-    }
-
-    private int getAge(Date date) {
-        Calendar client = Calendar.getInstance();
-        client.setTime(date);
-        Calendar current = Calendar.getInstance();
-        current.setTime(new Date());
-        int diff = current.get(YEAR) - client.get(YEAR);
-        if (client.get(MONTH) > current.get(MONTH) ||
-                (client.get(MONTH) == current.get(MONTH) && client.get(DATE) > current.get(DATE))) {
-            diff--;
+        try {
+            int clientAge = mapper.getAgeClient(request.getClientId());
+            int deadlineYears = (int) (request.getDeadline() / 12);
+            int totalTime = clientAge + deadlineYears;
+            return totalTime >= 80;
+        } catch (Exception e) {
+            Log.logError("Failed to get client age for client ID " + request.getClientId(), e);
+            return false;
         }
-        return diff;
     }
 }
