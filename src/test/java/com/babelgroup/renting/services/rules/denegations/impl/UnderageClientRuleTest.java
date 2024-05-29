@@ -25,7 +25,7 @@ class UnderageClientRuleTest {
         RentingRequest request = RentingRequest.builder().build();
         request.setClientId(4L);
 
-        when(mapper.getUnderageClient(request.getClientId())).thenReturn(1);
+        when(mapper.getAgeClient(request.getClientId())).thenReturn(17);
 
         assertTrue(sut.denegate(request));
     }
@@ -35,7 +35,7 @@ class UnderageClientRuleTest {
         RentingRequest request = RentingRequest.builder().build();
         request.setClientId(7L);
 
-        when(mapper.getUnderageClient(request.getClientId())).thenReturn(0);
+        when(mapper.getAgeClient(request.getClientId())).thenReturn(18);
 
         assertFalse(sut.denegate(request));
     }
@@ -45,7 +45,7 @@ class UnderageClientRuleTest {
         RentingRequest request = RentingRequest.builder().build();
         request.setClientId(10L);
 
-        when(mapper.getAssignorOrCreditor(request.getClientId())).thenReturn(0);
+        when(mapper.getAgeClient(request.getClientId())).thenReturn(55);
 
         assertFalse(sut.denegate(request));
     }
