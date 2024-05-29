@@ -60,12 +60,6 @@ public interface ClientMapper {
             "AND s.resultado = 'Aprobada con garantías'")
     boolean isGuarantor(Long clientId);
 
-    @Select("SELECT COUNT (*) " +
-            "FROM Cliente c " +
-            "INNER JOIN solicitud s on c.ID_CLIENTE = s.ID_CLIENTE " +
-            "WHERE c.ID_Cliente = :clientId")
-    int getNumberOfExistingRequest(Long clientId);
-
     @Select("SELECT c.ID_CLIENTE, TRUNC((SYSDATE - c.FECHA_NACIMIENTO) / 365.25, 0) " +
             "FROM CLIENTE c " +
             "WHERE c.ID_CLIENTE = :clienteId;")
@@ -78,11 +72,23 @@ public interface ClientMapper {
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "ID_CLIENTE")
     void createClient(Client client);
 
+    @Select("SELECT COUNT (*)" +
+            "FROM Cliente c" +
+            "INNER JOIN solicitud s on ID_CLIENTE = s.ID_CLIENTE" +
+            "WHERE c.ID_Cliente = :clientId")
+    int getNumberOfExistingRequest(Long clientId);
+
+
+    @Select("SELECT BORRADO_LOGICO" +
+            "FROM CLIENTE " +
+            "WHERE ID_CLIENTE = #{clientId}")
+    int getDeletionStatus(Long clientId);
+
     @Update("UPDATE CLIENTE " +
             "SET BORRADO_LOGICO = 1, " +
             "FECHA_BORRADO = SYSDATE " +
             "WHERE ID_CLIENTE = #{clienteId}")
-    void deleteClient(@Param("clienteId") Long clienteId);
+    void deleteClient(@Param("clienteId") long clienteId);
 
     @Select("SELECT c.DNI FROM INGUNIV_SCORING.CLIENTE c WHERE c.DNI = #{dni}")
     String getClient(@Param("dni") String dni);

@@ -107,16 +107,6 @@ public class ClientServiceImpl implements ClientService {
     }*/
 
     @Override
-    public Boolean deleteClient(long clientId) {
-        try{
-            this.clientMapper.deleteClient(clientId);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    @Override
     public Boolean clientExists(String dni) {
         String client = this.clientMapper.getClient(dni);
         return client != null;
@@ -187,12 +177,20 @@ public class ClientServiceImpl implements ClientService {
         return clientDto.getJobAntiquity() != null && clientDto.getCompanyCif() != null && clientDto.getNetIncome() != null && clientDto.getSalaryYear() != null;
     }
 
-    public Boolean canDeleteUserWithNoRequests(Long clientId) {
+    public Boolean canDeleteClientWithNoRequests(long clientId) {
         return this.clientMapper.getNumberOfExistingRequest(clientId) <= 0;
     }
 
-    public Boolean deleteClient(Long clientId) {
-        if (canDeleteUserWithNoRequests(clientId)) {
+    private boolean isClientAlreadyDeleted(long clientId) {
+        int deletionStatus = clientMapper.getDeletionStatus(clientId);
+        return deletionStatus == 1;
+    }
+
+    public Boolean deleteClient(long clientId) {
+        if (isClientAlreadyDeleted(clientId)) {
+            return false;
+        }
+        if (canDeleteClientWithNoRequests(clientId)) {
             this.clientMapper.deleteClient(clientId);
             return true;
         }

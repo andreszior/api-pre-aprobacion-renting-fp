@@ -108,7 +108,15 @@ public class RentingRequestServiceImpl implements RentingRequestService {
         return this.rentingRequestMapper.numberOfDeniedRequest(rentingRequestId) <= 0;
     }
 
+    private boolean isRequestAlreadyDeleted(long rentingRequestId) {
+        int deletionStatus = rentingRequestMapper.getDeletionStatus(rentingRequestId);
+        return  deletionStatus == 1;
+    }
+
     public boolean deleteRentingRequest(long rentingRequestId) {
+        if (isRequestAlreadyDeleted(rentingRequestId)) {
+            return false;
+        }
         if (canDeleteRequestWithDeniedStatus(rentingRequestId)) {
             this.rentingRequestMapper.deleteRentingRequest(rentingRequestId);
             return true;

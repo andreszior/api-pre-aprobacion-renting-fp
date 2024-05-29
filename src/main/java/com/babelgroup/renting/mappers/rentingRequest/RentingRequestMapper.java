@@ -58,11 +58,16 @@ public interface RentingRequestMapper {
             "FROM SOLICITUD" +
             "WHERE RESULTADO = Denegada AND ID_SOLICITUD = #{solicitudId};")
     int numberOfDeniedRequest(@Param ("solicitudId") Long solicitudId);
+    @Select("SELECT BORRADO_LOGICO" +
+            "FROM SOLICITUD " +
+            "WHERE ID_SOLICITUD = #{solicitudId}")
+    int getDeletionStatus(long solicitudId);
+
     @Update("UPDATE SOLICITUD " +
             "SET BORRADO_LOGICO = 1 " +
             "FECHA_BORRADO = SYSDATE " +
             " WHERE ID_SOLICITUD = #{solicitudId}")
-    void deleteRentingRequest(@Param("solicitudId") Long solicitudId);
+    void deleteRentingRequest(@Param("solicitudId") long solicitudId);;
 
     @Select("SELECT MAX(FECHA_RESOLUCION)" +
             " FROM SOLICITUD" +
