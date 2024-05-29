@@ -18,8 +18,8 @@ public class EmploymentSeniorityRule implements ApprobationRule {
 
     @Override
     public boolean approve(RentingRequest request) {
-        Date employmentStartDate = incomeMapper.getEploymentYear(request.getClientId());
-        int startYear = employmentStartDate.toInstant().atZone(ZoneId.systemDefault()).getYear();
-        return Year.now().getValue() - startYear >= 3;
+        Date startYear = incomeMapper.getEploymentYear(request.getClientId());
+        float seniority = Duration.between(LocalDate.now(), startYear.toInstant()).toDays()/365f;
+        return seniority >= 3;
     }
 }
