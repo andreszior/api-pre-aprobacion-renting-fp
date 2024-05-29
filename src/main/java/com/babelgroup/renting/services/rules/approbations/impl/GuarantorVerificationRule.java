@@ -16,12 +16,10 @@ public class GuarantorVerificationRule implements ApprobationRule {
         Long clientId = request.getClientId();
 
         boolean isNewClient = clientMapper.isNewClient(clientId);
-        boolean isGuarantor = clientMapper.isGuarantor(clientId); //no garante
-        if (/*!*/isNewClient){
+        boolean isGuarantor = clientMapper.isGuarantor(clientId);
+        if (!isNewClient){
             return true;
         }else
             return !isGuarantor;
-        //sería sin ! porque isGarantor true en realidad significa isNotGarantor==true
-        //o en el mapper que sea count != 0
     }
 }

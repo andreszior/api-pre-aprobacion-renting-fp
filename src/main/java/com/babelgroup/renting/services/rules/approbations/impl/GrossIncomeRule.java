@@ -12,26 +12,23 @@ import java.util.TimeZone;
 @RequiredArgsConstructor
 @Service
 public class GrossIncomeRule implements ApprobationRule {
+
     private final IncomeMapper mapper;
 
     @Override
     public boolean approve(RentingRequest request) {
-        double inversion = request.getInvestment();
-
-        // Se usa Calendar porque getYear esta deprecada
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Europe/Paris"));
         cal.setTime(request.getRentingRequestDate());
+        int year = cal.get(Calendar.YEAR);
 
-        long grossIncome = mapper.getGrossIncome(request.getClientId(),
-                cal.get(Calendar.YEAR));
+        boolean isFreelance = mapper.isFreelance(request.getClientId(), year) > 0;
 
-        // Si tiene algún ingreso bruto en los últimos 3 años es que es autonomo
-        boolean isFreelance = mapper.isFreelance(request.getClientId(),
-                cal.get(Calendar.YEAR)) > 0;
-
-        if(isFreelance){
-            return inversion <= grossIncome * 3;
+        if (isFreelance) {
+            long grossIncome = mapper.getGrossIncome(request.getClientId(), year);
+            double investment = request.getInvestment();
+            return investment <= grossIncome * 3;
         }
+
         return true;
     }
 }
