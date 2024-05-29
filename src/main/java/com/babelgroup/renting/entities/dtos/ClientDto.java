@@ -22,7 +22,7 @@ public class ClientDto {
     @Schema(description = "Fecha de nacimiento del cliente", example = "2000-01-01")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date birthdate;
-    @Schema(description = "Pais del cliente ISO3", example = "ES ")
+    @Schema(description = "Pais del cliente ISO3", example = "ESP")
     private String country;
     @Schema(description = "Código de provincia del cliente", example = "28")
     private String provinceCode;

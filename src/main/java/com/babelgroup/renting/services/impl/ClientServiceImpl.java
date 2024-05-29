@@ -31,7 +31,7 @@ public class ClientServiceImpl implements ClientService {
     public Client createClient(ClientDto clientDto) {
         Client client = buildClientEntity(clientDto);
         this.clientMapper.createClient(client);
-
+    /*
         if (isFreelance(clientDto)) {
             Freelance freelance = Freelance.builder()
                     .clientId(client.getId())
@@ -50,6 +50,7 @@ public class ClientServiceImpl implements ClientService {
             incomeService.createSalaried(salaried);
         }
 
+     */
        /* Employee employee = buildEmployeeEntity(client);
         createEmployee(employee);
 
