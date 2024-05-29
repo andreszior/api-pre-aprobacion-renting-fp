@@ -6,6 +6,8 @@ import com.babelgroup.renting.mappers.IncomeMapper;
 import com.babelgroup.renting.services.IncomeService;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
 @Service
 public class IncomeServiceImpl implements IncomeService {
 
@@ -26,12 +28,7 @@ public class IncomeServiceImpl implements IncomeService {
     }
 
     @Override
-    public long getClientSalary(Long idCliente){
-        return this.incomeMapper.getSalariedId(idCliente);
-    }
-
-    @Override
-    public long getEmploymentYear(Long idCliente) {
+    public Date getEmploymentYear(Long idCliente) {
         return this.incomeMapper.getEploymentYear(idCliente);
     }
 
