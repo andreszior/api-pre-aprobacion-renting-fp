@@ -2,8 +2,6 @@ package com.babelgroup.renting.mappers;
 
 import com.babelgroup.renting.entities.Freelance;
 import com.babelgroup.renting.entities.Salaried;
-import com.babelgroup.renting.entities.SalariedIncome;
-import com.babelgroup.renting.entities.dtos.ClientUpdateDto;
 import org.apache.ibatis.annotations.*;
 
 import java.util.Date;

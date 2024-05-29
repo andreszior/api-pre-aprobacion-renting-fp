@@ -4,14 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
-@Builder
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class Freelance {
-    private Long clientId;
+@SuperBuilder
+public class Freelance extends Income {
     private Double grossIncome;
-    private Double netIncome;
-    private Integer yearSalary;
+
 }

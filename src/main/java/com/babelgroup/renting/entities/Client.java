@@ -17,11 +17,4 @@ public class Client {
     private Date birthdate;
     private Country country;
     private Province provinceCode;
-    //de freelance
-    private Double grossIncome;
-    private Double netIncome;
-    private Integer yearSalary;
-    //de salaried
-    private Date jobAntiquity;
-    private String cif;
 }
