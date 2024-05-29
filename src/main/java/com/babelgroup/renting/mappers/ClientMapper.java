@@ -79,33 +79,12 @@ public interface ClientMapper {
     @Update("UPDATE CLIENTE SET BORRADO_LOGICO = 1 WHERE ID_CLIENTE = #{clienteId}")
     void deleteClient(@Param("clienteId") Long clienteId);
 
-    /*
-    @Insert("INSERT INTO INGUNIV_SCORING.EMPLEADO (ID_EMPLEADO, ID_CLIENTE) " +
-            "VALUES (#{id}, #{clientId})")
-    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "ID_EMPLEADO")
-    void createEmployee(Employee employee);
-
-    @Insert("INSERT INTO INGUNIV_SCORING.ASALARIADO (ID_EMPLEADO, ANTIGUEDAD_EMPLEO, CIF_EMPRESA) " +
-            "VALUES (#{employeeId}, #{jobAntiquity}, #{cif})")
-    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "ID_ASALARIADO")
-    void createSalaried(Salaried salaried);
-
-    @Insert("INSERT INTO INGUNIV_SCORING.RENTA_ASALARIADO (ID_ASALARIADO, ANIO_SALARIO, INGRESOS_NETOS) " +
-            "VALUES (#{salariedId}, #{salaryYear}, #{netIncome})")
-    void createSalariedIncome(SalariedIncome salariedIncome);
-
-    @Insert("INSERT INTO INGUNIV_SCORING.AUTONOMO (ID_EMPLEADO, ANIO_SALARIO, INGRESOS_NETOS, INGRESOS_BRUTOS) " +
-            "VALUES (#{employeeId}, #{yearSalary}, #{netIncome}, #{grossIncome})")
-    void createFreelance(Freelance freelance);
-
-     */
-
     @Select("SELECT c.DNI FROM INGUNIV_SCORING.CLIENTE c WHERE c.DNI = #{dni}")
     String getClient(@Param("dni") String dni);
 
     Client getClientById(long clientId);
 
-    @Update("UPATE INGUNIV_SCORING.CLIENTE c SET c.NOMBRE = #{name}, c.APELLIDO = #{lastnameFirst}, " +
+    @Update("UPDATE INGUNIV_SCORING.CLIENTE c SET c.NOMBRE = #{name}, c.APELLIDO = #{lastnameFirst}, " +
             "c.SEGUNDO_APELLIDO = #{lastnameSecond}, c.NACIONALIDAD = #{country.id}, c.CODIGO_PROVINICA = #{provinceCode} WHERE c.id_cliente = #{id}")
     boolean updateClient(Client client);
 }
