@@ -47,22 +47,22 @@ public interface ClientMapper {
             "FROM Producto_Contratado_Persona pcp " +
             "LEFT JOIN Producto_Contratado pc ON pcp.producto_contratado_id = pc.producto_contratado_id " +
             "LEFT JOIN Cliente c ON TRIM(LOWER(pcp.cif)) = TRIM(LOWER(c.dni)) " +
-            "WHERE c.ID_Cliente = :clientId" +
+            "WHERE c.ID_Cliente = :clientId " +
             "AND pc.fecha_baja < CURRENT_DATE()")
     boolean isNewClient(Long clientId);
 
-    @Select("SELECT (CASE WHEN COUNT(*) <> 0 THEN 'TRUE' ELSE 'FALSE' END)" +
+    @Select("SELECT (CASE WHEN COUNT(*) <> 0 THEN 'TRUE' ELSE 'FALSE' END) " +
             "FROM Cliente c" +
-            "INNER JOIN solicitud s ON c.ID_CLIENTE = s.ID_CLIENTE" +
-            "INNER JOIN garantia g ON G.ID_GARANTIA = s.ID_SOLICITUD" +
-            "WHERE c.ID_Cliente = :clientId" +
-            "AND g.NIF_AVALISTA = c.dni" +
+            "INNER JOIN solicitud s ON c.ID_CLIENTE = s.ID_CLIENTE " +
+            "INNER JOIN garantia g ON G.ID_GARANTIA = s.ID_SOLICITUD " +
+            "WHERE c.ID_Cliente = :clientId " +
+            "AND g.NIF_AVALISTA = c.dni " +
             "AND s.resultado = 'Aprobada con garantías'")
     boolean isGuarantor(Long clientId);
 
     @Select("SELECT COUNT (*)" +
             "FROM Cliente c" +
-            "INNER JOIN solicitud s on ID_CLIENTE = s.ID_CLIENTE" +
+            "INNER JOIN solicitud s on ID_CLIENTE = s.ID_CLIENTE " +
             "WHERE c.ID_Cliente = :clientId")
     int getNumberOfExistingRequest(Long clientId);
 
@@ -85,6 +85,6 @@ public interface ClientMapper {
     Client getClientById(long clientId);
 
     @Update("UPDATE INGUNIV_SCORING.CLIENTE c SET c.NOMBRE = #{name}, c.APELLIDO = #{lastnameFirst}, " +
-            "c.SEGUNDO_APELLIDO = #{lastnameSecond}, c.NACIONALIDAD = #{country.id}, c.CODIGO_PROVINICA = #{provinceCode} WHERE c.id_cliente = #{id}")
+            "c.SEGUNDO_APELLIDO = #{lastnameSecond}, c.NACIONALIDAD = #{country.id}, c.COD_PROVINCIA = #{provinceCode} WHERE c.id_cliente = #{id}")
     boolean updateClient(Client client);
 }
