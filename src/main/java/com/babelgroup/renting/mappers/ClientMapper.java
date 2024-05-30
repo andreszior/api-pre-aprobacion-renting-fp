@@ -1,6 +1,7 @@
 package com.babelgroup.renting.mappers;
 
 import com.babelgroup.renting.entities.*;
+import com.babelgroup.renting.entities.dtos.ClientDto;
 import org.apache.ibatis.annotations.*;
 
 import java.util.Date;
@@ -9,8 +10,8 @@ import java.util.Date;
 public interface ClientMapper {
 
     @Select("SELECT p.iso3 " +
-            "FROM pais p " +
-            "LEFT JOIN cliente c ON p.NACIONALIDAD = c.NACIONALIDAD " +
+            "FROM INGUNIV_SCORING.pais p " +
+            "LEFT JOIN INGUNIV_SCORING.cliente c ON p.NACIONALIDAD = c.NACIONALIDAD " +
             "WHERE c.ID_CLIENTE = :clientId AND p.iso3 = 'ES'")
     String getNacionalidad(Long clientId);
 
@@ -20,48 +21,48 @@ public interface ClientMapper {
     String getRating(Long clientId);
 
     @Select("SELECT Count(*) = 0 " +
-            "FROM solicitud s " +
-            "INNER JOIN garantia g ON s.ID_SOLICITUD = g.ID_GARANTIA " +
+            "FROM INGUNIV_SCORING.solicitud s " +
+            "INNER JOIN INGUNIV_SCORING.garantia g ON s.ID_SOLICITUD = g.ID_GARANTIA " +
             "WHERE s.resultado = 'Aprobada con garantías' AND s.ID_CLIENTE = :clientId")
     boolean hasBeenGuarantor(Long clientId);
 
     @Select("SELECT COUNT(id_impago) " +
-            "FROM titular_impago " +
+            "FROM INGUNIV_SCORING.titular_impago " +
             "WHERE id_cliente = :clientId")
     int getNumberOfUnpaids(Long clientId);
 
     @Select("SELECT COUNT(ca.COD_CATEGORIA)  " +
-            "FROM CLIENTE c " +
-            "LEFT JOIN DEUDA d ON c.DNI = d.NIF  " +
-            "LEFT JOIN CATEGORIA_ACREEDOR ca ON d.CATEGORIA_ACREEDOR_ID = ca.CATEGORIA_ACREEDOR_ID  " +
+            "FROM INGUNIV_SCORING.CLIENTE c " +
+            "LEFT JOIN INGUNIV_SCORING.DEUDA d ON c.DNI = d.NIF  " +
+            "LEFT JOIN INGUNIV_SCORING.CATEGORIA_ACREEDOR ca ON d.CATEGORIA_ACREEDOR_ID = ca.CATEGORIA_ACREEDOR_ID  " +
             "WHERE c.ID_CLIENTE = :clientId AND ca.COD_CATEGORIA IN ('RT', 'FI');")
     int getAssignorOrCreditor(Long clienteId);
 
     @Select("SELECT d.IMPORTE_IMPAGO " +
-            "FROM DEUDA d " +
-            "JOIN CLIENTE c ON d.NIF = c.DNI " +
+            "FROM INGUNIV_SCORING.DEUDA d " +
+            "JOIN INGUNIV_SCORING.CLIENTE c ON d.NIF = c.DNI " +
             "WHERE c.id_cliente = :clientID")
     double getAmountDebt(Long clientId);
-    
+
     @Select("SELECT COUNT(*) = 0 " +
-            "FROM Producto_Contratado_Persona pcp " +
-            "LEFT JOIN Producto_Contratado pc ON pcp.producto_contratado_id = pc.producto_contratado_id " +
-            "LEFT JOIN Cliente c ON TRIM(LOWER(pcp.cif)) = TRIM(LOWER(c.dni)) " +
+            "FROM INGUNIV_SCORING.Producto_Contratado_Persona pcp " +
+            "LEFT JOIN INGUNIV_SCORING.Producto_Contratado pc ON pcp.producto_contratado_id = pc.producto_contratado_id " +
+            "LEFT JOIN INGUNIV_SCORING.Cliente c ON TRIM(LOWER(pcp.cif)) = TRIM(LOWER(c.dni)) " +
             "WHERE c.ID_Cliente = :clientId " +
             "AND pc.fecha_baja < CURRENT_DATE")
     boolean isNewClient(Long clientId);
 
     @Select("SELECT (CASE WHEN COUNT(*) <> 0 THEN 'TRUE' ELSE 'FALSE' END) " +
-            "FROM Cliente c " +
-            "INNER JOIN solicitud s ON c.ID_CLIENTE = s.ID_CLIENTE " +
-            "INNER JOIN garantia g ON G.ID_GARANTIA = s.ID_SOLICITUD " +
+            "FROM INGUNIV_SCORING.CLIENTE c " +
+            "INNER JOIN INGUNIV_SCORING.solicitud s ON c.ID_CLIENTE = s.ID_CLIENTE " +
+            "INNER JOIN INGUNIV_SCORING.garantia g ON G.ID_GARANTIA = s.ID_SOLICITUD " +
             "WHERE c.ID_Cliente = :clientId " +
             "AND g.NIF_AVALISTA = c.dni " +
             "AND s.resultado = 'Aprobada con garantías'")
     boolean isGuarantor(Long clientId);
 
     @Select("SELECT c.ID_CLIENTE, TRUNC((SYSDATE - c.FECHA_NACIMIENTO) / 365.25, 0) " +
-            "FROM CLIENTE c " +
+            "FROM INGUNIV_SCORING.CLIENTE c " +
             "WHERE c.ID_CLIENTE = :clienteId;")
     int getAgeClient(Long clienteId);
 
@@ -72,19 +73,19 @@ public interface ClientMapper {
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "ID_CLIENTE")
     void createClient(Client client);
 
-    @Select("SELECT COUNT (*)" +
-            "FROM Cliente c" +
-            "INNER JOIN solicitud s on ID_CLIENTE = s.ID_CLIENTE" +
-            "WHERE c.ID_Cliente = :clientId")
+    @Select("SELECT COUNT(*) " +
+            "FROM INGUNIV_SCORING.CLIENTE c " +
+            "INNER JOIN INGUNIV_SCORING.solicitud s on c.ID_CLIENTE = s.ID_CLIENTE " +
+            "WHERE c.ID_Cliente = #{clientId}")
     int getNumberOfExistingRequest(Long clientId);
 
 
-    @Select("SELECT BORRADO_LOGICO" +
-            "FROM CLIENTE " +
+    @Select("SELECT BORRADO_LOGICO " +
+            "FROM INGUNIV_SCORING.CLIENTE " +
             "WHERE ID_CLIENTE = #{clientId}")
     int getDeletionStatus(Long clientId);
 
-    @Update("UPDATE CLIENTE " +
+    @Update("UPDATE INGUNIV_SCORING.CLIENTE " +
             "SET BORRADO_LOGICO = 1, " +
             "FECHA_BORRADO = SYSDATE " +
             "WHERE ID_CLIENTE = #{clienteId}")
@@ -93,6 +94,9 @@ public interface ClientMapper {
     @Select("SELECT c.DNI FROM INGUNIV_SCORING.CLIENTE c WHERE c.DNI = #{dni}")
     String getClient(@Param("dni") String dni);
 
+    @Select("SELECT c.ID_CLIENTE, c.DNI, c.NOMBRE, c.APELLIDO, c.SEGUNDO_APELLIDO, c.RATING, c.FECHA_NACIMIENTO, " +
+            "NULL, NULL FROM INGUNIV_SCORING.CLIENTE c " +
+            "WHERE c.ID_CLIENTE = #{clientId}")
     Client getClientById(long clientId);
 
     @Update("UPDATE INGUNIV_SCORING.CLIENTE c SET c.NOMBRE = #{name}, c.APELLIDO = #{lastnameFirst}, " +
