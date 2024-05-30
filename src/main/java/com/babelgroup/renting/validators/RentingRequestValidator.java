@@ -18,9 +18,7 @@ public class RentingRequestValidator implements Validator {
     @Override
     public void validate (Object target, Errors errors) {
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "clientId", "clientId.empty", "El campo cliente no puede estar vacío");
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "rentingRequestDate", "rentingRequestDate.empty", "El campo fecha de solicitud no puede estar vacío");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "effectiveDateRenting", "effectiveDateRenting.empty", "El campo fecha de inicio de vigencia no puede estar vacío");
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "resolutionDate", "resolutionDate.empty", "El campo fecha de resolución no puede estar vacío");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "vehicles", "vehicles.empty", "El campo vehículos no puede estar vacío");
     }
 }

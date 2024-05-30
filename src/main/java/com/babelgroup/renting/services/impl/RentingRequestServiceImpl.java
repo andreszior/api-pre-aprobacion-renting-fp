@@ -7,35 +7,40 @@ import com.babelgroup.renting.entities.dtos.RentingRequestDto;
 import com.babelgroup.renting.entities.dtos.VehicleDto;
 import com.babelgroup.renting.exceptions.EmptyRentingRequestException;
 import com.babelgroup.renting.exceptions.RentingRequestNotFoundException;
+import com.babelgroup.renting.mappers.VehicleMapper;
 import com.babelgroup.renting.mappers.rentingRequest.RentingRequestMapper;
+import com.babelgroup.renting.services.FeeCalculationService;
 import com.babelgroup.renting.services.RentingRequestService;
 import com.babelgroup.renting.services.rules.PreApprobationService;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 @Service
 public class RentingRequestServiceImpl implements RentingRequestService {
     private final RentingRequestMapper rentingRequestMapper;
     private final PreApprobationService preApprobationService;
+    private final VehicleMapper vehicleMapper;
+    private final FeeCalculationService feeCalculationService;
 
-    public RentingRequestServiceImpl(RentingRequestMapper rentingRequestMapper, PreApprobationService preApprobationService) {
+    public RentingRequestServiceImpl(RentingRequestMapper rentingRequestMapper, PreApprobationService preApprobationService,
+                                     VehicleMapper vehicleMapper, FeeCalculationService feeCalculationService) {
         this.rentingRequestMapper = rentingRequestMapper;
         this.preApprobationService = preApprobationService;
+        this.vehicleMapper = vehicleMapper;
+        this.feeCalculationService = feeCalculationService;
     }
 
     @Override
-    public RentingRequest createRentingRequest(RentingRequest rentingRequest) throws EmptyRentingRequestException {
+    public RentingRequest createRentingRequest(RentingRequestDto rentingRequestDto) throws EmptyRentingRequestException {
+        RentingRequest rentingRequest = convertToEntity(rentingRequestDto);
         if (rentingRequest == null) throw new EmptyRentingRequestException();
         rentingRequest.setResolution(preApprobationService.calculatePreResult(rentingRequest).toString());
-        return rentingRequestMapper.createRentingRequest(rentingRequest);
-    }
-
-    @Override
-    public RentingRequest createRentingRequestFromDto(RentingRequestDto rentingRequestDto) throws EmptyRentingRequestException {
-        return createRentingRequest(convertToEntity(rentingRequestDto));
+        rentingRequestMapper.createRentingRequest(rentingRequest);
+        return rentingRequest;
     }
 
     @Override
@@ -57,27 +62,75 @@ public class RentingRequestServiceImpl implements RentingRequestService {
         return rentingRequestMapper.findRentingRequestsByStatus(rentingRequestStatus);
     }
 
+    @Override
+    public List<Long>getUsedIds() {
+        return rentingRequestMapper.findUsedIds();
+    }
+
+
+    private Long convertToVehicle(VehicleDto vehicleDto){
+        return vehicleMapper.getVehicleIdByBrandAndModel(vehicleDto);
+    }
+
+
+    private Vehicle vehicleBuild(VehicleDto vehicleDto){
+        Long vehicleId = convertToVehicle(vehicleDto);
+        if (vehicleId == null || vehicleId == 0) {
+            Long numeroMasAlto = vehicleMapper.getVehicleIds().get(0);
+            for (int i = 1; i < vehicleMapper.getVehicleIds().size(); i++) {
+                Long elementoActual = vehicleMapper.getVehicleIds().get(i);
+                if (elementoActual > numeroMasAlto) {
+                    numeroMasAlto = elementoActual;
+                }
+            }
+            vehicleId = numeroMasAlto + 1;
+        }
+        return Vehicle.builder()
+                .id(vehicleId)
+                .brand(vehicleDto.getBrand())
+                .model(vehicleDto.getModel())
+                .price(vehicleDto.getPrice())
+                .cylinderCapacity(vehicleDto.getCylinderCapacity())
+                .power(vehicleDto.getPower())
+                .numberOfSeats(vehicleDto.getNumberOfSeats())
+                .baseFee(vehicleDto.getBaseFee())
+                .color(vehicleDto.getColor())
+                .build();
+    }
+
     private RentingRequest convertToEntity(RentingRequestDto rentingRequestDto) throws EmptyRentingRequestException {
         if (rentingRequestDto == null) throw new EmptyRentingRequestException();
         int numVehicles = rentingRequestDto.getVehicles().size();
+        Random rd = new Random();
+        List<Long> usedIds = getUsedIds();
+        long id;
 
+        do {
+            id = rd.nextInt(10000) + 1;
+        } while (usedIds.contains(id));
         double investment = 0;
-        for (VehicleDto vehiculo: rentingRequestDto.getVehicles()){
-                investment += vehiculo.getPrice();
+        List<Vehicle> listaVehiculos = new ArrayList<>();
+        for (VehicleDto vehiculoDto: rentingRequestDto.getVehicles()){
+            Vehicle vehiculo = vehicleBuild(vehiculoDto);
+            investment += vehiculo.getPrice();
+            listaVehiculos.add(vehiculo);
         }
 
-        double fee = investment/12;
-        return RentingRequest.builder()
+        RentingRequest rentingRequest = RentingRequest.builder()
+                .id(id)
                 .clientId(rentingRequestDto.getClientId())
                 .rentingRequestDate(new Date())
                 .effectiveDateRenting(rentingRequestDto.getEffectiveDateRenting())
                 .resolutionDate(new Date())
                 .numberOfVehicles(numVehicles)
+                .vehicles(listaVehiculos)
                 .investment(investment)
-                .fee(fee)
+                .fee(null)
                 .deadline(12)
                 .resolution(RequestResult.PENDING.getDescription())
                 .build();
+        rentingRequest.setFee(feeCalculationService.calculateFee(rentingRequest));
+        return rentingRequest;
     }
 
     public Boolean canDeleteRequestWithDeniedStatus(long rentingRequestId) {

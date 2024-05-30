@@ -4,6 +4,7 @@ import com.babelgroup.renting.entities.RentingRequest;
 import com.babelgroup.renting.entities.RequestResult;
 import com.babelgroup.renting.entities.dtos.RentingRequestDto;
 import com.babelgroup.renting.entities.dtos.RentingRequestStatusDto;
+import com.babelgroup.renting.exceptions.EmptyRentingRequestException;
 import com.babelgroup.renting.exceptions.RentingRequestNotFoundException;
 import com.babelgroup.renting.services.RentingRequestService;
 import com.babelgroup.renting.validators.RentingRequestValidator;
@@ -46,7 +47,7 @@ public class RentingRequestController {
     @ApiResponse(responseCode = "201", description = "Petición creada correctamente", content = @Content(schema = @Schema(implementation = RentingRequestDto.class)))
     @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "DTO con los datos de la peticion requeridos para el registro.", required = true,
             content = @Content(schema = @Schema(implementation = RentingRequestDto.class)))
-    public ResponseEntity<?> createRentingRequest(@Valid @RequestBody RentingRequestDto rentingRequestDto) {
+    public ResponseEntity<?> createRentingRequest(@Valid @RequestBody RentingRequestDto rentingRequestDto) throws EmptyRentingRequestException {
 
         BindingResult bindingResult = new DataBinder(rentingRequestDto).getBindingResult();
         rentingRequestValidator.validate(rentingRequestDto, bindingResult);
@@ -54,9 +55,9 @@ public class RentingRequestController {
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(bindingResult.getAllErrors(), HttpStatus.BAD_REQUEST);
         }
+        RentingRequest newRentingRequest = rentingRequestService.createRentingRequest(rentingRequestDto);
 
         try {
-            RentingRequest newRentingRequest = rentingRequestService.createRentingRequestFromDto(rentingRequestDto);
             return new ResponseEntity<>(newRentingRequest, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

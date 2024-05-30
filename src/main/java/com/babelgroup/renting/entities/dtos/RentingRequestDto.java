@@ -17,6 +17,6 @@ public class RentingRequestDto {
     @Schema(description = "Fecha de inicio vigor del renting", example = "10-07-1999")
     private Date effectiveDateRenting;
 
-    @Schema(description = "Vehículos solicitados",  example = "[{brand: 'Subaru', model: 'WRX STI', price: 50000.00}, {brand: 'Opel', model: 'Corsa', price: 32130.00}]")
+    @Schema(description = "Vehículos solicitados",  example = "[{brand: 'Subaru', model: 'WRX STI'}]")
     private List<VehicleDto> vehicles;
 }

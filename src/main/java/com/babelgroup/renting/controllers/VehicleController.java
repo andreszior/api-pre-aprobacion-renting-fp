@@ -13,18 +13,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import com.babelgroup.renting.services.VehicleService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/vehicle")
@@ -48,6 +41,23 @@ public class VehicleController {
     @ApiResponse(responseCode = "200", description = "Vehículos obtenidos correctamente.",
             content = @Content(schema = @Schema(implementation = VehicleDto.class)))
     @GetMapping("")
+    public ResponseEntity<List<VehicleDto>> getVehicles() {
+        try {
+            List<Vehicle> vehicles = vehicleService.getAllVehicles();
+            List<VehicleDto> vehicleDtos = vehicleListToDtoList(vehicles);
+            return new ResponseEntity<List<VehicleDto>>(vehicleDtos, HttpStatus.OK);
+        }
+        catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /*
+    @Operation(summary = "Obtener vehículos disponibles.",
+            description = "Obtienes los vehículos disponibles en para el renting.")
+    @ApiResponse(responseCode = "200", description = "Vehículos obtenidos correctamente.",
+            content = @Content(schema = @Schema(implementation = VehicleDto.class)))
+    @GetMapping("")
     public ResponseEntity<List<VehicleDto>> getVehicles(@RequestParam(value = "brand", required = false) String brand,
                                                         @RequestParam(value = "model", required = false) String model,
                                                         @RequestParam(value = "color", required = false) String color,
@@ -57,6 +67,23 @@ public class VehicleController {
             List<Vehicle> vehicles = vehicleService.getVehicles(brand, model, color, minBaseFee, maxBaseFee);
             List<VehicleDto> vehicleDtos = vehicleListToDtoList(vehicles);
             return new ResponseEntity<List<VehicleDto>>(vehicleDtos, HttpStatus.OK);
+        }
+        catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+     */
+
+    @Operation(summary = "Agregar un vehículo a los vehículos disponibles.",
+            description = "Añades un vehículo a los vehículos disponibles en para el renting.")
+    @ApiResponse(responseCode = "200", description = "Vehículos obtenidos correctamente.",
+            content = @Content(schema = @Schema(implementation = VehicleDto.class)))
+    @PostMapping("")
+    public ResponseEntity<VehicleDto> addVehicle(@RequestBody VehicleDto vehicleDto) {
+        try {
+            vehicleService.addVehicle(vehicleDto);
+            return new ResponseEntity<VehicleDto>(vehicleDto, HttpStatus.OK);
         }
         catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -79,6 +106,25 @@ public class VehicleController {
         }
         return vehicleDtos;
     }
+
+    @Operation(summary = "Obtener vehículo por su ID",
+            description = "Obtén un vehículo según su ID.")
+    @ApiResponse(responseCode = "200", description = "Vehículo obtenido correctamente",
+            content = @Content(schema = @Schema(implementation = Vehicle.class)))
+    @GetMapping("/{vehicleId}")
+    public ResponseEntity<Vehicle> getVehicleById(@PathVariable Long vehicleId) {
+        try {
+            Vehicle vehicle = vehicleService.getVehicleById(vehicleId);
+            if (vehicle != null) {
+                return ResponseEntity.ok(vehicle);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 
     @Operation(summary = "Añadir extras al vehículo.",
             description = "Se añadirán extras al vehículo siempre que sea posible.")
