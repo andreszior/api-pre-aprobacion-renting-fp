@@ -11,14 +11,15 @@ public interface IncomeMapper {
 
     @Insert("INSERT INTO INGUNIV_SCORING.RENTA (ID_CLIENTE, ANIO_SALARIO, INGRESOS_NETOS, " +
             "CUENTA_PROPIA, ANTIGUEDAD_EMPLEO, CIF_EMPRESA) " +
-            "VALUES (#{clientId}, #{salaried.salaryYear}, #{salaried.netIncome}, 0, " +
-            "#{salaried.jobAntiquity}, #{salaried.cif})")
-    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "ID_CLIENTE")
+            "VALUES (#{clientId}, #{salaryYear}, #{netIncome}, 0, " +
+            "#{jobAntiquity}, #{cif})")
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "ID_RENTA")
     void createSalaried(Salaried salaried);
 
     @Insert("INSERT INTO INGUNIV_SCORING.RENTA (ID_CLIENTE, ANIO_SALARIO, INGRESOS_NETOS, INGRESOS_BRUTOS, " +
             "CUENTA_PROPIA) " +
-            "VALUES (#{clientId}, #{freelance.yearSalary}, #{freelance.netIncome}, #{freelance.grossIncome}, 1)")
+            "VALUES (#{clientId}, #{salaryYear}, #{netIncome}, #{grossIncome}, 1)")
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "ID_RENTA")
     void createFreelance(Freelance freelance);
 
     @Select("SELECT AVG(r.INGRESOS_NETOS)\n" +

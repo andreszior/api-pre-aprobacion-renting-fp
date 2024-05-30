@@ -1,5 +1,6 @@
 package com.babelgroup.renting.entities.dtos;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -26,6 +27,7 @@ public class ClientDto {
     private String country;
     @Schema(description = "Código de provincia del cliente", example = "28")
     private String provinceCode;
-    @Schema(description = "Estado de eliminación lógica del cliente", example = "0")
-    private Integer isDeleted;
+//    @Schema(description = "Estado de eliminación lógica del cliente", example = "true")
+//    @JsonProperty
+//    private boolean isDeleted;
 }

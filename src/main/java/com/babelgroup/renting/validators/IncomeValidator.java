@@ -27,10 +27,6 @@ public class IncomeValidator implements Validator {
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "isFreelance", "isFreelance.empty");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "companyCif", "companyCif.empty");
 
-        if(income.getCompanyCif() != null && income.getCompanyCif().length() != 9){
-            errors.rejectValue("companyCif", "companyCif.length", "El CIF de la empresa debe tener 9 caracteres");
-        }
-
         if(income.getNetIncome() != null && income.getNetIncome() < 0){
             errors.rejectValue("netIncome", "netIncome.invalid", "Los ingresos netos no pueden ser negativos");
         }
@@ -39,8 +35,18 @@ public class IncomeValidator implements Validator {
             errors.rejectValue("salaryYear", "salaryYear.invalid", "El año del salario no puede ser negativo");
         }
 
-        if(income.getJobAntiquity() != null && (income.getJobAntiquity().after(new Date()))) {
-            errors.rejectValue("jobAntiquity", "jobAntiquity.invalid", "La fecha de antigüedad laboral no puede ser posterior a la fecha actual");
+        if (income.isFreelance() && income.getGrossIncome() != null && income.getGrossIncome() < 0) {
+            errors.rejectValue("grossIncome", "grossIncome.invalid", "Los ingresos brutos no pueden ser negativos o nulos para un autónomo");
+
+        }
+        if (!income.isFreelance() && income.getCompanyCif() != null && income.getCompanyCif().length() != 9) {
+            errors.rejectValue("grossIncome", "grossIncome.invalid", "Los ingresos brutos no pueden ser negativos o nulos para un autónomo");
+
+        }
+
+        if (!income.isFreelance() && income.getJobAntiquity() != null && (income.getJobAntiquity().after(new Date()))) {
+            errors.rejectValue("grossIncome", "grossIncome.invalid", "Los ingresos brutos no pueden ser negativos o nulos para un autónomo");
+
         }
     }
 

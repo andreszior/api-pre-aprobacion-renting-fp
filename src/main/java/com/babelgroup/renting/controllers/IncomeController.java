@@ -3,7 +3,7 @@ package com.babelgroup.renting.controllers;
 import com.babelgroup.renting.entities.Client;
 import com.babelgroup.renting.entities.Freelance;
 import com.babelgroup.renting.entities.Salaried;
-import com.babelgroup.renting.entities.dtos.ClientDto;
+import com.babelgroup.renting.entities.dtos.IncomeDTO;
 import com.babelgroup.renting.entities.dtos.RentingRequestDto;
 import com.babelgroup.renting.exceptions.RequestValidationException;
 import com.babelgroup.renting.logger.Log;
@@ -44,22 +44,24 @@ import org.springframework.web.bind.annotation.*;
     @ApiResponse(responseCode = "201", description = "Renta de cliente creada correctamente.",
             content = @Content(schema = @Schema(implementation = Integer.class, example = "30")))
     @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "DTO con los datos del id del cliente y la renta del cliente.", required = true,
-            content = @Content(schema = @Schema(implementation = IncomeDto.class)))
-    public ResponseEntity<?> registerIncome(@Valid @RequestBody IncomeDto incomeDto, BindingResult bindingResult) {
+            content = @Content(schema = @Schema(implementation = IncomeDTO.class)))
+    public ResponseEntity<?> registerIncome(@Valid @RequestBody IncomeDTO incomeDto, BindingResult bindingResult) {
+        Long id = null;
         try {
-            incomeService.createIncome(incomeDto);
+            id = incomeService.createIncome(incomeDto);
+            if (id == null) throw new Exception();
         }
         catch (Exception e) {
             Log.logError(e.getMessage(), e);
             return new ResponseEntity<>("Error interno del servidor.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         Log.logInfo("Renta creada correctamente.");
-        return new ResponseEntity<>(income.getId(), HttpStatus.CREATED);
+        return new ResponseEntity<>(id, HttpStatus.CREATED);
     }
 
 
 
-    @GetMapping("/{clientId}")
+    /*@GetMapping("/{clientId}")
     @Operation(summary = "Recupera el income de cliente",
         description = "Dado un id de cliente, recupera la renta")
     @ApiResponse(responseCode = "200", description = "Renta de cliente recuperada correctamente.",
@@ -72,5 +74,5 @@ import org.springframework.web.bind.annotation.*;
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-    }
+    }*/
 }

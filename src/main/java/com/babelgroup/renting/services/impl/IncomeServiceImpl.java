@@ -48,23 +48,24 @@ public class IncomeServiceImpl implements IncomeService {
     public Long createIncome(IncomeDTO incomeDTO){
         if (!incomeDTO.isFreelance()) {
             Salaried salaried = Salaried.builder()
-                    .clientId(incomeDTO.getId())
+                    .clientId(incomeDTO.getClientId())
                     .netIncome(incomeDTO.getNetIncome())
                     .salaryYear(incomeDTO.getSalaryYear())
                     .jobAntiquity(incomeDTO.getJobAntiquity())
                     .cif(incomeDTO.getCompanyCif())
                     .build();
             createSalaried(salaried);
+            return salaried.getId();
         } else {
             Freelance freelance = Freelance.builder()
-                    .clientId(incomeDTO.getId())
+                    .clientId(incomeDTO.getClientId())
                     .grossIncome(incomeDTO.getGrossIncome())
                     .netIncome(incomeDTO.getNetIncome())
                     .salaryYear(incomeDTO.getSalaryYear())
                     .build();
             createFreelance(freelance);
+            return freelance.getId();
         }
-        return incomeDTO.getId();
     }
 
 }
