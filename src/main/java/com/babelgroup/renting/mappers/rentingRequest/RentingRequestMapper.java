@@ -55,10 +55,11 @@ public interface RentingRequestMapper {
     List<RentingRequest> findRentingRequestsByStatus(String status);
 
     @Select("SELECT COUNT (*)" +
-            "FROM SOLICITUD" +
-            "WHERE RESULTADO = Denegada AND ID_SOLICITUD = #{solicitudId};")
-    int numberOfDeniedRequest(@Param ("solicitudId") Long solicitudId);
-    @Select("SELECT BORRADO_LOGICO" +
+            "FROM SOLICITUD " +
+            "WHERE RESULTADO = Denegada AND ID_CLIENTE = #{clientId};")
+    int numberOfDeniedRequest(@Param ("solicitudId") Long clientId);
+
+    @Select("SELECT BORRADO_LOGICO " +
             "FROM SOLICITUD " +
             "WHERE ID_SOLICITUD = #{solicitudId}")
     int getDeletionStatus(long solicitudId);
@@ -66,12 +67,12 @@ public interface RentingRequestMapper {
     @Update("UPDATE SOLICITUD " +
             "SET BORRADO_LOGICO = 1 " +
             "FECHA_BORRADO = SYSDATE " +
-            " WHERE ID_SOLICITUD = #{solicitudId}")
+            "WHERE ID_SOLICITUD = #{solicitudId}")
     void deleteRentingRequest(@Param("solicitudId") long solicitudId);;
 
-    @Select("SELECT MAX(FECHA_RESOLUCION)" +
-            " FROM SOLICITUD" +
-            " WHERE ID_CLIENTE = :request.clientId" +
-            " AND RESULTADO = :request.requestResult")
+    @Select("SELECT MAX(FECHA_RESOLUCION) " +
+            "FROM SOLICITUD " +
+            "WHERE ID_CLIENTE = #{request.clientId} " +
+            "AND RESULTADO = #{request.requestResult}")
     Date getLastRentingRequestWithWarranty(RentingRequest request);
 }

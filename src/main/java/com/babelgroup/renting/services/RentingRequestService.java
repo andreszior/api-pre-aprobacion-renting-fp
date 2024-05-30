@@ -13,7 +13,5 @@ public interface RentingRequestService {
     RentingRequest updateRentingRequestStatus(long rentingRequestId, String status) throws RentingRequestNotFoundException;
     RentingRequest getRentingRequest(long rentingRequestId) throws RentingRequestNotFoundException;
     List<RentingRequest> getFilteredRentingRequests(String rentingRequestStatus);
-    List<RentingRequestDto> convertToDtoList(List<RentingRequest> rentingRequests);
-    RentingRequestDto getRentingRequestDto(long rentingRequestId)  throws RentingRequestNotFoundException;
     boolean deleteRentingRequest(long rentingRequestId) throws RentingRequestNotFoundException;
 }

@@ -57,8 +57,7 @@ public class RentingRequestController {
 
         try {
             RentingRequest newRentingRequest = rentingRequestService.createRentingRequestFromDto(rentingRequestDto);
-            RentingRequestDto newRentingRequestDto = rentingRequestService.getRentingRequestDto(newRentingRequest.getId());
-            return new ResponseEntity<>(newRentingRequestDto, HttpStatus.CREATED);
+            return new ResponseEntity<>(newRentingRequest, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -72,7 +71,7 @@ public class RentingRequestController {
     @ApiResponse(responseCode = "404", description = "Renting request no encontrada.")
     public ResponseEntity<?> getRentingRequest(@PathVariable long rentingRequestId) {
         try {
-            RentingRequestDto rentingRequest = rentingRequestService.getRentingRequestDto(rentingRequestId);
+            RentingRequest rentingRequest = rentingRequestService.getRentingRequest(rentingRequestId);
             return new ResponseEntity<>(rentingRequest, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -97,14 +96,15 @@ public class RentingRequestController {
     @Operation(summary = "Se obtiene una lista de solicitudes con el Status indicado.",
             description = "Dado un rentingRequestStatus por parámetro, se obtiene una lista de solicitudes con Status rentingRequestStatus.")
     @ApiResponse(responseCode = "200", description = "Lista de solicitudes filtradas correctamente.")
-    public ResponseEntity<List<RentingRequestDto>> getFilteredRentingRequests(@PathVariable String rentingRequestStatus) {
+    public ResponseEntity<List<RentingRequest>> getFilteredRentingRequests(@PathVariable String rentingRequestStatus) {
         if (rentingRequestStatus == null || rentingRequestStatus.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         try {
             String description = RequestResult.getDescriptionByName(rentingRequestStatus);
             List<RentingRequest> rentingRequests = rentingRequestService.getFilteredRentingRequests(description);
-            return new ResponseEntity<>(rentingRequestService.convertToDtoList(rentingRequests), HttpStatus.ACCEPTED);
+            //return new ResponseEntity<>(rentingRequestService.convertToDtoList(rentingRequests), HttpStatus.ACCEPTED);
+            return new ResponseEntity<>(rentingRequests, HttpStatus.ACCEPTED);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -128,7 +128,7 @@ public class RentingRequestController {
         }
 
         try {
-            RentingRequestDto updatedRequest = rentingRequestService.getRentingRequestDto(rentingRequestService.updateRentingRequestStatus(rentingRequestId, rentingRequestStatusDto.getStatus()).getId());
+            RentingRequest updatedRequest = rentingRequestService.getRentingRequest(rentingRequestService.updateRentingRequestStatus(rentingRequestId, rentingRequestStatusDto.getStatus()).getId());
             if (updatedRequest != null) {
                 return ResponseEntity.ok(updatedRequest);
             } else {
