@@ -17,13 +17,10 @@ public class ClientServiceImpl implements ClientService {
 
     private final ClientMapper clientMapper;
     private final ProvinceService provinceService;
-    private final IncomeService incomeService;
     private final CountryService countryService;
 
-    public ClientServiceImpl(ClientMapper clientMapper, IncomeService incomeService, CountryService countryService, ProvinceService provinceService) {
-
+    public ClientServiceImpl(ClientMapper clientMapper, CountryService countryService, ProvinceService provinceService) {
         this.clientMapper = clientMapper;
-        this.incomeService = incomeService;
         this.countryService = countryService;
         this.provinceService = provinceService;
     }
@@ -32,35 +29,8 @@ public class ClientServiceImpl implements ClientService {
     public Client createClient(ClientDto clientDto) {
         Client client = buildClientEntity(clientDto);
         this.clientMapper.createClient(client);
-    /*
-        if (isFreelance(clientDto)) {
-            Freelance freelance = Freelance.builder()
-                    .clientId(client.getId())
-                    .grossIncome(clientDto.getGrossIncome())
-                    .netIncome(clientDto.getNetIncome())
-                    .yearSalary(clientDto.getSalaryYear())
-                    .build();
-            incomeService.createFreelance(freelance);
-
-        } else if (isSalaried(clientDto)) {
-            Salaried salaried = Salaried.builder()
-                    .clientId(client.getId())
-                    .jobAntiquity(clientDto.getJobAntiquity())
-                    .cif(clientDto.getCompanyCif())
-                    .build();
-            incomeService.createSalaried(salaried);
-        }
-
-     */
-       /* Employee employee = buildEmployeeEntity(client);
-        createEmployee(employee);
-
-        createSalariedEntries(clientDto, employee);
-        createFreelanceEntries(clientDto, employee);*/
         return client;
     }
-
-
 
     @Override
     public Boolean updateClient(long clientId, ClientUpdateDto clientUpdateDto) {
@@ -78,16 +48,6 @@ public class ClientServiceImpl implements ClientService {
         client.setProvinceCode(province);
 
         return this.clientMapper.updateClient(client);
-    }
-
-    @Override
-    public Boolean deleteClient(long clientId) {
-        try{
-            this.clientMapper.deleteClient(clientId);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
     }
 
     @Override
@@ -109,7 +69,7 @@ public class ClientServiceImpl implements ClientService {
                 .build();
     }
 
-    public Boolean canDeleteUserWithNoRequests(Long clientId) {
+    public Boolean canDeleteClientWithNoRequests(Long clientId) {
         return this.clientMapper.getNumberOfExistingRequest(clientId) <= 0;
     }
 
@@ -123,8 +83,12 @@ public class ClientServiceImpl implements ClientService {
             return false;
         }
         if (canDeleteClientWithNoRequests(clientId)) {
-            this.clientMapper.deleteClient(clientId);
-            return true;
+            try{
+                this.clientMapper.deleteClient(clientId);
+                return true;
+            } catch (Exception e){
+                return false;
+            }
         }
         return false;
     }
