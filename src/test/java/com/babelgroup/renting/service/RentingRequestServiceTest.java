@@ -41,7 +41,7 @@ public class RentingRequestServiceTest {
         RentingRequest pruebaRentingRequest = createRentingRequest();
 
         when(mapper.createRentingRequest(pruebaRentingRequest)).thenReturn(pruebaRentingRequest);
-        when(preApprobationService.calculatePreResult(pruebaRentingRequest)).thenReturn(RequestResult.PENDING);
+        when(preApprobationService.calculatePreResult(eq(pruebaRentingRequest))).thenReturn(RequestResult.PENDING);
         RentingRequest resultado = null;
         try {
             resultado = sut.createRentingRequest(pruebaRentingRequest);
