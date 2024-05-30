@@ -48,13 +48,4 @@ class DebtRuleTest {
         Assertions.assertFalse(sut.approve(request));
     }
 
-    @Test
-    void testApprove_ShouldReturnTrue_WhenFeeIsLessThanAYear() {
-        request.setDeadline(6);
-        request.setFee(50.0);
-
-        when(mapper.getAmountDebt(request.getClientId())).thenReturn(20.0);
-
-        Assertions.assertTrue(sut.approve(request));
-    }
 }

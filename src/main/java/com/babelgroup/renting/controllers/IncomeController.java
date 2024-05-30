@@ -3,7 +3,6 @@ package com.babelgroup.renting.controllers;
 import com.babelgroup.renting.entities.Client;
 import com.babelgroup.renting.entities.Freelance;
 import com.babelgroup.renting.entities.Salaried;
-import com.babelgroup.renting.entities.dtos.ClientDto;
 import com.babelgroup.renting.entities.dtos.IncomeDTO;
 import com.babelgroup.renting.entities.dtos.RentingRequestDto;
 import com.babelgroup.renting.exceptions.RequestValidationException;
@@ -50,9 +49,7 @@ import org.springframework.web.bind.annotation.*;
         Long id = null;
         try {
             id = incomeService.createIncome(incomeDto);
-            if (id == null){
-                throw new Exception();
-            }
+            if (id == null) throw new Exception();
         }
         catch (Exception e) {
             Log.logError(e.getMessage(), e);
@@ -63,8 +60,8 @@ import org.springframework.web.bind.annotation.*;
     }
 
 
-/*
-    @GetMapping("/{clientId}")
+
+    /*@GetMapping("/{clientId}")
     @Operation(summary = "Recupera el income de cliente",
         description = "Dado un id de cliente, recupera la renta")
     @ApiResponse(responseCode = "200", description = "Renta de cliente recuperada correctamente.",
@@ -77,7 +74,5 @@ import org.springframework.web.bind.annotation.*;
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-    }
-
- */
+    }*/
 }
