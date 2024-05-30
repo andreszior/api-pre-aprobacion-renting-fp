@@ -14,7 +14,7 @@ import java.util.Date;
 public class IncomeValidator implements Validator {
     @Override
     public boolean supports(Class<?> clazz) {
-        return ClientDto.class.equals(clazz);
+        return IncomeDTO.class.equals(clazz);
     }
 
     @Override
