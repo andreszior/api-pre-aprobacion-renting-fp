@@ -1,7 +1,9 @@
 package com.babelgroup.renting.services.impl;
 
 import com.babelgroup.renting.entities.Freelance;
+import com.babelgroup.renting.entities.Income;
 import com.babelgroup.renting.entities.Salaried;
+import com.babelgroup.renting.entities.dtos.IncomeDTO;
 import com.babelgroup.renting.mappers.IncomeMapper;
 import com.babelgroup.renting.services.IncomeService;
 import org.springframework.stereotype.Service;
@@ -43,5 +45,27 @@ public class IncomeServiceImpl implements IncomeService {
         return this.incomeMapper.isSalaried(idCliente);
     }
 
+    public Long createIncome(IncomeDTO incomeDTO){
+        if (!incomeDTO.isFreelance()) {
+            Salaried salaried = Salaried.builder()
+                    .clientId(incomeDTO.getClientId())
+                    .netIncome(incomeDTO.getNetIncome())
+                    .salaryYear(incomeDTO.getSalaryYear())
+                    .jobAntiquity(incomeDTO.getJobAntiquity())
+                    .cif(incomeDTO.getCompanyCif())
+                    .build();
+            createSalaried(salaried);
+            return salaried.getId();
+        } else {
+            Freelance freelance = Freelance.builder()
+                    .clientId(incomeDTO.getClientId())
+                    .grossIncome(incomeDTO.getGrossIncome())
+                    .netIncome(incomeDTO.getNetIncome())
+                    .salaryYear(incomeDTO.getSalaryYear())
+                    .build();
+            createFreelance(freelance);
+            return freelance.getId();
+        }
+    }
 
 }

@@ -3,6 +3,7 @@ package com.babelgroup.renting.services.impl;
 import com.babelgroup.renting.entities.*;
 import com.babelgroup.renting.entities.dtos.ClientDto;
 import com.babelgroup.renting.entities.dtos.ClientUpdateDto;
+import com.babelgroup.renting.entities.dtos.IncomeDTO;
 import com.babelgroup.renting.mappers.ClientMapper;
 import com.babelgroup.renting.services.ClientService;
 import com.babelgroup.renting.services.CountryService;
@@ -77,34 +78,17 @@ public class ClientServiceImpl implements ClientService {
         client.setProvinceCode(province);
 
         return this.clientMapper.updateClient(client);
-
-//        return this.clientMapper.updateClient(client) && this.employeeMapper.updateSalariedSalary(clientUpdateDto)
-//                && this.employeeMapper.updateSalariedValues(clientUpdateDto);
-    }
-
-   /* @Override
-    public Employee createEmployee(Employee employee) {
-        this.clientMapper.createEmployee(employee);
-        return employee;
     }
 
     @Override
-    public Salaried createSalaried(Salaried salaried) {
-        this.clientMapper.createSalaried(salaried);
-        return salaried;
+    public Boolean deleteClient(long clientId) {
+        try{
+            this.clientMapper.deleteClient(clientId);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
-
-    @Override
-    public SalariedIncome createSalariedIncome(SalariedIncome salariedIncome) {
-        this.clientMapper.createSalariedIncome(salariedIncome);
-        return salariedIncome;
-    }
-
-    @Override
-    public Freelance createFreelance(Freelance freelance) {
-        this.clientMapper.createFreelance(freelance);
-        return freelance;
-    }*/
 
     @Override
     public Boolean clientExists(String dni) {
@@ -125,59 +109,7 @@ public class ClientServiceImpl implements ClientService {
                 .build();
     }
 
-
-   /* public Employee buildEmployeeEntity(Client client) {
-        return Employee.builder()
-                .id(client.getId())
-                .clientId(client.getId())
-                .build();
-    }
-
-    public void createSalariedEntries(ClientDto clientDto, Employee employee) {
-        if (isSalaried(clientDto)) {
-            Salaried salaried = Salaried.builder()
-                    .jobAntiquity(clientDto.getJobAntiquity())
-                    .employeeId(employee.getId())
-                    .cif(clientDto.getCompanyCif())
-                    .build();
-
-            createSalaried(salaried);
-            Log.logInfo("Registro cliente asalariado creado correctamente.");
-
-            SalariedIncome salaryIncome = SalariedIncome.builder()
-                    .netIncome(clientDto.getNetIncome())
-                    .salariedId(salaried.getId())
-                    .salaryYear(clientDto.getSalaryYear())
-                    .build();
-
-            createSalariedIncome(salaryIncome);
-            Log.logInfo("Registro ingresos asalariado creado correctamente.");
-        }
-    }
-
-    public void createFreelanceEntries(ClientDto clientDto, Employee employee) {
-        if (isFreelance(clientDto)) {
-            Freelance freelance = Freelance.builder()
-                    .netIncome(clientDto.getNetIncome())
-                    .grossIncome(clientDto.getGrossIncome())
-                    .yearSalary(clientDto.getSalaryYear())
-                    .employeeId(employee.getId())
-                    .build();
-
-            createFreelance(freelance);
-            Log.logInfo("Registro cliente autónomo creado correctamente.");
-        }
-    }*/
-
-    public Boolean isFreelance(ClientDto clientDto) {
-        return clientDto.getGrossIncome() != null && clientDto.getNetIncome() != null && clientDto.getSalaryYear() != null;
-    }
-
-    public Boolean isSalaried(ClientDto clientDto) {
-        return clientDto.getJobAntiquity() != null && clientDto.getCompanyCif() != null && clientDto.getNetIncome() != null && clientDto.getSalaryYear() != null;
-    }
-
-    public Boolean canDeleteClientWithNoRequests(long clientId) {
+    public Boolean canDeleteUserWithNoRequests(Long clientId) {
         return this.clientMapper.getNumberOfExistingRequest(clientId) <= 0;
     }
 
