@@ -1,7 +1,10 @@
 package com.babelgroup.renting.services.impl;
 
 import com.babelgroup.renting.entities.RentingRequest;
+import com.babelgroup.renting.entities.RequestResult;
+import com.babelgroup.renting.entities.Vehicle;
 import com.babelgroup.renting.entities.dtos.RentingRequestDto;
+import com.babelgroup.renting.entities.dtos.VehicleDto;
 import com.babelgroup.renting.exceptions.EmptyRentingRequestException;
 import com.babelgroup.renting.exceptions.RentingRequestNotFoundException;
 import com.babelgroup.renting.mappers.rentingRequest.RentingRequestMapper;
@@ -9,6 +12,8 @@ import com.babelgroup.renting.services.RentingRequestService;
 import com.babelgroup.renting.services.rules.PreApprobationService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -48,60 +53,31 @@ public class RentingRequestServiceImpl implements RentingRequestService {
     }
 
     @Override
-    public RentingRequestDto getRentingRequestDto(long rentingRequestId) throws RentingRequestNotFoundException {
-        RentingRequest rentingRequest = rentingRequestMapper.findRentingRequestById(rentingRequestId);
-        if (rentingRequest == null) throw new RentingRequestNotFoundException();
-        RentingRequestDto dto = null;
-        try {
-            dto = convertToDto(rentingRequest);
-        } catch (Exception e) {
-            System.err.println("Error al convertir a DTO -> getRentingRequestDto: " + e.getMessage());
-        }
-        return dto;
-    }
-
-    @Override
     public List<RentingRequest> getFilteredRentingRequests(String rentingRequestStatus) {
         return rentingRequestMapper.findRentingRequestsByStatus(rentingRequestStatus);
     }
 
-
-    private RentingRequestDto convertToDto(RentingRequest rentingRequest) throws EmptyRentingRequestException {
-        if (rentingRequest == null) throw new EmptyRentingRequestException();
-        return RentingRequestDto.builder()
-                .clientId(rentingRequest.getClientId())
-                .rentingRequestDate(rentingRequest.getRentingRequestDate())
-                .effectiveDateRenting(rentingRequest.getEffectiveDateRenting())
-                .resolutionDate(rentingRequest.getResolutionDate())
-                .numberOfVehicles(rentingRequest.getNumberOfVehicles())
-                .investment(rentingRequest.getInvestment())
-                .fee(rentingRequest.getFee())
-                .deadline(rentingRequest.getDeadline())
-                .resolution(rentingRequest.getResolution())
-                .build();
-    }
-
     private RentingRequest convertToEntity(RentingRequestDto rentingRequestDto) throws EmptyRentingRequestException {
         if (rentingRequestDto == null) throw new EmptyRentingRequestException();
+        int numVehicles = rentingRequestDto.getVehicles().size();
+
+        double investment = 0;
+        for (VehicleDto vehiculo: rentingRequestDto.getVehicles()){
+                investment += vehiculo.getPrice();
+        }
+
+        double fee = investment/12;
         return RentingRequest.builder()
                 .clientId(rentingRequestDto.getClientId())
-                .rentingRequestDate(rentingRequestDto.getRentingRequestDate())
+                .rentingRequestDate(new Date())
                 .effectiveDateRenting(rentingRequestDto.getEffectiveDateRenting())
-                .resolutionDate(rentingRequestDto.getResolutionDate())
-                .numberOfVehicles(rentingRequestDto.getNumberOfVehicles())
-                .investment(rentingRequestDto.getInvestment())
-                .fee(rentingRequestDto.getFee())
-                .deadline(rentingRequestDto.getDeadline())
-                .resolution(rentingRequestDto.getResolution())
+                .resolutionDate(new Date())
+                .numberOfVehicles(numVehicles)
+                .investment(investment)
+                .fee(fee)
+                .deadline(12)
+                .resolution(RequestResult.PENDING.getDescription())
                 .build();
-    }
-
-    private RentingRequestDto safeConvertToDto(RentingRequest rentingRequest) {
-        try {
-            return convertToDto(rentingRequest);
-        } catch (EmptyRentingRequestException e) {
-            return null;
-        }
     }
 
     public Boolean canDeleteRequestWithDeniedStatus(long rentingRequestId) {
@@ -122,16 +98,5 @@ public class RentingRequestServiceImpl implements RentingRequestService {
             return true;
         }
         return false;
-    }
-    /*@Override
-    public boolean deleteRentingRequest(long rentingRequestId) throws RentingRequestNotFoundException {
-        RentingRequest rentingRequest = rentingRequestMapper.findRentingRequestById(rentingRequestId);
-        if (rentingRequest == null) throw new RentingRequestNotFoundException();
-        return rentingRequestMapper.deleteRentingRequest(rentingRequestId) > 0;
-    }*/
-
-    @Override
-    public List<RentingRequestDto> convertToDtoList(List<RentingRequest> rentingRequests) {
-        return rentingRequests.stream().map(this::safeConvertToDto).toList();
     }
 }
