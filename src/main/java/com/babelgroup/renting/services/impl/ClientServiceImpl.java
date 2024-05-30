@@ -113,8 +113,16 @@ public class ClientServiceImpl implements ClientService {
         return this.clientMapper.getNumberOfExistingRequest(clientId) <= 0;
     }
 
-    public Boolean deleteClient(Long clientId) {
-        if (canDeleteUserWithNoRequests(clientId)) {
+    private boolean isClientAlreadyDeleted(long clientId) {
+        int deletionStatus = clientMapper.getDeletionStatus(clientId);
+        return deletionStatus == 1;
+    }
+
+    public Boolean deleteClient(long clientId) {
+        if (isClientAlreadyDeleted(clientId)) {
+            return false;
+        }
+        if (canDeleteClientWithNoRequests(clientId)) {
             this.clientMapper.deleteClient(clientId);
             return true;
         }
