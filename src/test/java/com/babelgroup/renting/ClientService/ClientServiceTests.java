@@ -23,6 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -59,6 +60,19 @@ class ClientServiceTests {
         Assertions.assertEquals(expectedClient, client);
 
     }
+
+
+    @Test
+    void testDeleteClient() {
+        Client clientToDelete = createClientEntity();
+
+        boolean result = sut.deleteClient(clientToDelete.getId());
+
+        assertTrue(result);
+        Assertions.assertEquals(clientToDelete.getDni(), clientMapper.getClientById(clientToDelete.getId()).getDni());
+
+    }
+
 
     private Client createClientEntity() {
         return Client.builder()

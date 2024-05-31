@@ -14,15 +14,16 @@ import com.babelgroup.renting.services.impl.ClientServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
 
 @SpringBootTest
+//@ExtendWith(MockitoExtension.class)
 class UpdateClientTests {
 
 
@@ -39,12 +40,32 @@ class UpdateClientTests {
     private CountryService countryService;
     private ProvinceService provinceService;
 
+    private ClientServiceImpl clientServiceImpl;
+
     @BeforeEach()
     void setUp() {
+
         clientMapper = Mockito.mock(ClientMapper.class);
-        countryMapper = Mockito.mock(CountryMapper.class);
+        countryService = Mockito.mock(CountryService.class);
+        provinceService = Mockito.mock(ProvinceService.class);
+        clientServiceImpl = Mockito.mock(ClientServiceImpl.class);
+
         sut = new ClientServiceImpl(clientMapper, countryService, provinceService);
     }
+
+    @Test
+    void testUpdateClient_shouldReturnFalse_whenClientDoesNotExist() {
+        // Given
+        long clientId = 1L;
+
+        // When
+        when(clientMapper.getClientById(clientId)).thenReturn(null);
+
+        // Then
+        Boolean result = clientServiceImpl.updateClient(clientId, clientDto);
+        Assertions.assertFalse(result);
+    }
+
 
     @Test
     void testUpdateClientES_shouldCallUpdateClient_whenCalled() {
@@ -57,9 +78,9 @@ class UpdateClientTests {
         clientDto = createClientDto("España");
 
         //When
-        when(countryMapper.getCountry("España")).thenReturn(this.country);
-        when(clientMapper.getClientById(anyLong())).thenReturn(any());
-        sut.updateClient((long) 1, clientDto);
+        when(countryService.getCountry("España")).thenReturn(this.country);
+        when(clientMapper.getClientById(anyLong())).thenReturn(createClient());
+        sut.updateClient(1L, clientDto);
 
         //Then
         verify(clientMapper, times(1)).updateClient(this.clientArgumentCaptor.capture());
@@ -72,18 +93,19 @@ class UpdateClientTests {
 
 
     @Test
-    void testCreateClientPT_shouldCallCreateClient_whenCalled() {
+    void testCreateClientPT_shouldCallUpdateClient_whenCalled() {
         //Given
-        clientDto = createClientDto("Portugal");
         this.country = new Country();
         this.country.setIso3("POR");
         this.country.setName("Portugal");
-        this.country.setId((long) 2);
+        this.country.setId((long) 1);
+        clientDto = createClientDto("Portugal");
+
 
         //When
-        when(countryMapper.getCountry("Portugal")).thenReturn(this.country);
-
-        sut.updateClient((long) 1, clientDto);
+        when(countryService.getCountry("Portugal")).thenReturn(this.country);
+        when(clientMapper.getClientById(anyLong())).thenReturn(createClient());
+        sut.updateClient( 2L, clientDto);
 
         //Then
         verify(clientMapper, times(1)).updateClient(this.clientArgumentCaptor.capture());
@@ -100,5 +122,11 @@ class UpdateClientTests {
 
         return clientDto;
     }
+    private Client createClient() {
+        Client client = Client.builder().build();
+        return client;
+    }
+
+
 
 }
