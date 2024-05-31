@@ -51,15 +51,15 @@ class RentingRequestControllerTest {
 
     @Test
     void getFilteredRentingRequests_ShouldReturnApprovedRequests_WhenStatusIsApproved() {
-        List<RentingRequestDto> expected = new ArrayList<>();
+        List<RentingRequest> expected = new ArrayList<>();
         for (RentingRequest request : approvedRequestsList) {
-            RentingRequestDto dto = RentingRequestDto.builder().build();
-            dto.setResolution(request.getResolution());
-            expected.add(dto);
+            RentingRequest req = RentingRequest.builder().build();
+            req.setResolution(request.getResolution());
+            expected.add(req);
         }
         when(rentingRequestService.getFilteredRentingRequests(RequestResult.APPROVED.getDescription())).thenReturn(approvedRequestsList);
 
-        ResponseEntity<List<RentingRequestDto>> response = this.sut.getFilteredRentingRequests(RequestResult.APPROVED.name());
+        ResponseEntity<List<RentingRequest>> response = this.sut.getFilteredRentingRequests(RequestResult.APPROVED.name());
         assertEquals(expected, response.getBody());
 
         verify(rentingRequestService, times(1)).getFilteredRentingRequests(RequestResult.APPROVED.getDescription());
@@ -67,15 +67,15 @@ class RentingRequestControllerTest {
 
     @Test
     void getFilteredRentingRequests_ShouldReturnDeniedRequests_WhenStatusIsDenied() {
-        List<RentingRequestDto> expected = new ArrayList<>();
+        List<RentingRequest> expected = new ArrayList<>();
         for (RentingRequest request : deniedRequestsList) {
-            RentingRequestDto dto = RentingRequestDto.builder().build();
-            dto.setResolution(request.getResolution());
-            expected.add(dto);
+            RentingRequest req = RentingRequest.builder().build();
+            req.setResolution(request.getResolution());
+            expected.add(req);
         }
         when(rentingRequestService.getFilteredRentingRequests(RequestResult.DENIED.getDescription())).thenReturn(deniedRequestsList);
 
-        ResponseEntity<List<RentingRequestDto>> response = this.sut.getFilteredRentingRequests(RequestResult.DENIED.name());
+        ResponseEntity<List<RentingRequest>> response = this.sut.getFilteredRentingRequests(RequestResult.DENIED.name());
         assertEquals(expected, response.getBody());
 
         verify(rentingRequestService, times(1)).getFilteredRentingRequests(RequestResult.DENIED.getDescription());
@@ -83,15 +83,15 @@ class RentingRequestControllerTest {
 
     @Test
     void getFilteredRentingRequests_ShouldReturnApprovedWithWarrantyRequests_WhenStatusIsApprovedWithWarranty() {
-        List<RentingRequestDto> expected = new ArrayList<>();
+        List<RentingRequest> expected = new ArrayList<>();
         for (RentingRequest request : approvedWithWarrantyRequestsList) {
-            RentingRequestDto dto = RentingRequestDto.builder().build();
-            dto.setResolution(request.getResolution());
-            expected.add(dto);
+            RentingRequest req = RentingRequest.builder().build();
+            req.setResolution(request.getResolution());
+            expected.add(req);
         }
         when(rentingRequestService.getFilteredRentingRequests(RequestResult.APPROVED_WITH_WARRANTY.getDescription())).thenReturn(approvedWithWarrantyRequestsList);
 
-        ResponseEntity<List<RentingRequestDto>> response = this.sut.getFilteredRentingRequests(RequestResult.APPROVED_WITH_WARRANTY.name());
+        ResponseEntity<List<RentingRequest>> response = this.sut.getFilteredRentingRequests(RequestResult.APPROVED_WITH_WARRANTY.name());
         assertEquals(expected, response.getBody());
 
         verify(rentingRequestService, times(1)).getFilteredRentingRequests(RequestResult.APPROVED_WITH_WARRANTY.getDescription());
@@ -101,7 +101,7 @@ class RentingRequestControllerTest {
     @NullAndEmptySource
     @ValueSource(strings = {"INVALID"})
     void getFilteredRentingRequests_ShouldReturnBadRequest_WhenStatusIsInvalidOrEmptyOrNull(String status) {
-        ResponseEntity<List<RentingRequestDto>> response = this.sut.getFilteredRentingRequests(status);
+        ResponseEntity<List<RentingRequest>> response = this.sut.getFilteredRentingRequests(status);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 
         verify(rentingRequestService, never()).getFilteredRentingRequests(status);

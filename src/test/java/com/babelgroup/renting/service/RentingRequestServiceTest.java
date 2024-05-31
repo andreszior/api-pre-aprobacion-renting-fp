@@ -7,13 +7,16 @@ import com.babelgroup.renting.entities.RentingRequest;
 import com.babelgroup.renting.entities.RequestResult;
 import com.babelgroup.renting.exceptions.EmptyRentingRequestException;
 import com.babelgroup.renting.exceptions.RentingRequestNotFoundException;
+import com.babelgroup.renting.mappers.VehicleMapper;
 import com.babelgroup.renting.mappers.rentingRequest.RentingRequestMapper;
+import com.babelgroup.renting.services.FeeCalculationService;
 import com.babelgroup.renting.services.impl.RentingRequestServiceImpl;
 import com.babelgroup.renting.services.rules.PreApprobationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -27,12 +30,16 @@ public class RentingRequestServiceTest {
     private RentingRequest request;
 
     private PreApprobationService preApprobationService;
+    private VehicleMapper vehicleMapper;
+    private FeeCalculationService feeCalculationService;
 
     @BeforeEach
     void setUp() {
         mapper = Mockito.mock(RentingRequestMapper.class);
         preApprobationService = Mockito.mock(PreApprobationService.class);
-        sut = new RentingRequestServiceImpl(mapper, preApprobationService);
+        vehicleMapper = Mockito.mock(VehicleMapper.class);
+        feeCalculationService = Mockito.mock(FeeCalculationService.class);
+        sut = new RentingRequestServiceImpl(mapper, preApprobationService, vehicleMapper, feeCalculationService);
         request = RentingRequest.builder().clientId(1L).build();
     }
 

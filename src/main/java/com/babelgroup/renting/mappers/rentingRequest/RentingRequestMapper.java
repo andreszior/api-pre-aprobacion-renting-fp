@@ -43,7 +43,7 @@ public interface RentingRequestMapper {
             "WHERE ID_SOLICITUD = #{rentalRequestId}")
     RentingRequest updateRentingRequestStatus(@Param("rentingRequestId") long rentingRequestId, @Param("resolution") String resolution) throws RentingRequestNotFoundException;
 
-    @Select("SELECT ID_SOLICITUD as id, " +
+    @Select("SELECT ID_SOLICITUD as id," +
             "ID_CLIENTE as clientId, " +
             "FECHA_SOLICITUD as rentingRequestDate, " +
             "FECHA_INICIO_VIGOR_RENTING as effectiveDateRenting, " +
@@ -55,10 +55,10 @@ public interface RentingRequestMapper {
             "PLAZO as deadline, " +
             "RESULTADO as resolution " +
             "FROM INGUNIV_SCORING.SOLICITUD " +
-            "WHERE id = #{rentingRequestId}")
+            "WHERE ID_SOLICITUD = #{rentingRequestId}")
     @Results({
-            @Result(property = "id", column = "ID_SOLICITUD"),
             @Result(property = "clientId", column = "ID_CLIENTE"),
+            @Result(property = "id", column = "ID_SOLICITUD"),
             @Result(property = "rentingRequestDate", column = "FECHA_SOLICITUD"),
             @Result(property = "effectiveDateRenting", column = "FECHA_INICIO_VIGOR_RENTING"),
             @Result(property = "resolutionDate", column = "FECHA_RESOLUCION"),
@@ -88,7 +88,6 @@ public interface RentingRequestMapper {
     @Update("UPDATE INGUNIV_SCORING.SOLICITUD SET BORRADO_LOGICO = 1, " +
             "FECHA_BORRADO = SYSDATE WHERE ID_SOLICITUD = #{rentingRequestId}")
     boolean deleteRentingRequest(@Param("rentingRequestId") long rentingRequestId);
-
 
     @Select("SELECT MAX(FECHA_RESOLUCION) " +
             "FROM SOLICITUD " +

@@ -73,6 +73,8 @@ public class RentingRequestController {
     public ResponseEntity<?> getRentingRequest(@PathVariable long rentingRequestId) {
         try {
             RentingRequest rentingRequest = rentingRequestService.getRentingRequest(rentingRequestId);
+            System.out.println(rentingRequest);
+
             return new ResponseEntity<>(rentingRequest, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -105,7 +107,6 @@ public class RentingRequestController {
         try {
             String description = RequestResult.getDescriptionByName(rentingRequestStatus);
             List<RentingRequest> rentingRequests = rentingRequestService.getFilteredRentingRequests(description);
-            //return new ResponseEntity<>(rentingRequestService.convertToDtoList(rentingRequests), HttpStatus.ACCEPTED);
             return new ResponseEntity<>(rentingRequests, HttpStatus.ACCEPTED);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
