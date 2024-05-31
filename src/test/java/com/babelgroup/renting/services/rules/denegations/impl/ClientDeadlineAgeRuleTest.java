@@ -1,4 +1,3 @@
-/*
 package com.babelgroup.renting.services.rules.denegations.impl;
 
 import com.babelgroup.renting.entities.RentingRequest;
@@ -51,44 +50,43 @@ public class ClientDeadlineAgeRuleTest {
     }
 
     @Test
-    void testApprove_ShouldReturnTrue_WhenClientIsOlderTHanEighty() {
+    void testDenegation_ShouldReturnTrue_WhenClientIsOlderTHanEighty() {
         request.setDeadline(12);
-        when(clientMapper.getBirthdate(anyLong())).thenReturn(oldBirthdate);
+        when(clientMapper.getAgeClient(anyLong())).thenReturn(81);
 
         Assertions.assertTrue(sut.denegate(request));
     }
 
     @Test
-    void testApprove_ShouldReturnFalse_WhenClientIsYoungAndDDeadlineIsShort() {
+    void testDenegation_ShouldReturnFalse_WhenClientIsYoungAndDDeadlineIsShort() {
         request.setDeadline(12);
-        when(clientMapper.getBirthdate(anyLong())).thenReturn(youngBirthdate);
+        when(clientMapper.getAgeClient(anyLong())).thenReturn(17);
 
         Assertions.assertFalse(sut.denegate(request));
     }
 
     @Test
-    void testApprove_ShouldReturnTrue_WhenClientIsYoungAndDDeadlineTooLong() {
-        request.setDeadline(720);
-        when(clientMapper.getBirthdate(anyLong())).thenReturn(youngBirthdate);
+    void testDenegation_ShouldReturnTrue_WhenClientIsYoungAndDDeadlineTooLong() {
+        request.setDeadline(800);
+        when(clientMapper.getAgeClient(anyLong())).thenReturn(17);
 
         Assertions.assertTrue(sut.denegate(request));
     }
 
     @Test
-    void testApprove_ShouldReturnTrue_WhenClientIsOlderTHanEightyAndDDeadlineTooLong() {
+    void testDenegation_ShouldReturnTrue_WhenClientIsOlderTHanEightyAndDDeadlineTooLong() {
         request.setDeadline(720);
-        when(clientMapper.getBirthdate(anyLong())).thenReturn(oldBirthdate);
+        when(clientMapper.getAgeClient(anyLong())).thenReturn(81);
 
         Assertions.assertTrue(sut.denegate(request));
     }
 
     @Test
-    void testApprove_ShouldReturnFalse_WhenClientIsOldAndDeadlineIsShort() {
+    void testDenegation_ShouldReturnFalse_WhenClientIsOldAndDeadlineIsShort() {
         request.setDeadline(6);
-        when(clientMapper.getBirthdate(anyLong())).thenReturn(oldBirthdate_2);
+        when(clientMapper.getAgeClient(anyLong())).thenReturn(70);
 
         Assertions.assertFalse(sut.denegate(request));
     }
 
 }
-*/
