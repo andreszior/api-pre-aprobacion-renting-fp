@@ -1,8 +1,6 @@
 package com.babelgroup.renting.validators;
 
-import com.babelgroup.renting.entities.dtos.ClientDto;
 import com.babelgroup.renting.entities.dtos.IncomeDTO;
-import com.babelgroup.renting.logger.Log;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -24,7 +22,7 @@ public class IncomeValidator implements Validator {
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "grossIncome", "grossIncome.empty");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "salaryYear", "salaryYear.empty");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "jobAntiquity", "jobAntiquity.empty");
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "isFreelance", "isFreelance.empty");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "freelance", "freelance.empty");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "companyCif", "companyCif.empty");
 
         if(income.getNetIncome() != null && income.getNetIncome() < 0){

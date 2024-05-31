@@ -21,7 +21,7 @@ public class IncomeDTO {
     private Date jobAntiquity;
     @Schema(description = "Cuenta propia", example = "true")
     @JsonProperty
-    private boolean isFreelance;
+    private boolean freelance;
     @Schema(description = "Año del salario", example = "2021")
     private Integer salaryYear;
     @Schema(description = "CIF de la empresa", example = "112345678")
