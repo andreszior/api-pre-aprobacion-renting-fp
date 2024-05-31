@@ -54,8 +54,21 @@ public interface RentingRequestMapper {
             "PLAZO as deadline, " +
             "RESULTADO as resolution " +
             "FROM INGUNIV_SCORING.SOLICITUD " +
-            "WHERE ID_SOLICITUD = #{rentingRequestId}")
-    RentingRequest findRentingRequestById(@Param("rentingRequestId") long rentingRequestId) throws RentingRequestNotFoundException;
+            "WHERE id = #{rentingRequestId}")
+    @Results({
+            @Result(property = "id", column = "ID_SOLICITUD"),
+            @Result(property = "clientId", column = "ID_CLIENTE"),
+            @Result(property = "rentingRequestDate", column = "FECHA_SOLICITUD"),
+            @Result(property = "effectiveDateRenting", column = "FECHA_INICIO_VIGOR_RENTING"),
+            @Result(property = "resolutionDate", column = "FECHA_RESOLUCION"),
+            @Result(property = "numberOfVehicles", column = "NUMERO_VEHICULOS"),
+            @Result(property = "investment", column = "INVERSION"),
+            @Result(property = "fee", column = "CUOTA"),
+            @Result(property = "deadline", column = "PLAZO"),
+            @Result(property = "resolution", column = "RESULTADO")
+    })
+    RentingRequest findRentingRequestById(@Param("rentingRequestId") long rentingRequestId);
+
 
     @Select("SELECT * FROM SOLICITUD " +
             "WHERE RESULTADO = #{status}")

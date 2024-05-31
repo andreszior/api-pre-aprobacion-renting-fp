@@ -1,10 +1,13 @@
 package com.babelgroup.renting.mappers;
 
 import com.babelgroup.renting.entities.Freelance;
+import com.babelgroup.renting.entities.Income;
 import com.babelgroup.renting.entities.Salaried;
+import com.babelgroup.renting.entities.dtos.IncomeDTO;
 import org.apache.ibatis.annotations.*;
 
 import java.util.Date;
+import java.util.List;
 
 @Mapper
 public interface IncomeMapper {
@@ -53,4 +56,19 @@ public interface IncomeMapper {
             "WHERE r.ID_CLIENTE = :clientId AND CUENTA_PROPIA = 1\n " +
             "GROUP BY r.ID_CLIENTE")
     int isFreelance(Long clienteId, int year);
+
+    @Select("SELECT r.ID_CLIENTE, r.ANIO_SALARIO, r.INGRESOS_NETOS, r.INGRESOS_BRUTOS, r.CUENTA_PROPIA, " +
+            "r.ANTIGUEDAD_EMPLEO, r.CIF_EMPRESA \n" +
+            "FROM INGUNIV_SCORING.RENTA r \n" +
+            "WHERE r.ID_CLIENTE = #{clientId}")
+    @Results({
+            @Result(property = "clientId", column = "ID_CLIENTE"),
+            @Result(property = "netIncome", column = "INGRESOS_NETOS"),
+            @Result(property = "grossIncome", column = "INGRESOS_BRUTOS"),
+            @Result(property = "jobAntiquity", column = "ANTIGUEDAD_EMPLEO"),
+            @Result(property = "isFreelance", column = "CUENTA_PROPIA"),
+            @Result(property = "salaryYear", column = "ANIO_SALARIO"),
+            @Result(property = "companyCif", column = "CIF_EMPRESA"),
+    })
+    List<IncomeDTO> getIncomes(@Param("clientId") Long clientId);
 }

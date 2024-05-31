@@ -1,13 +1,11 @@
 package com.babelgroup.renting.controllers;
 
-import com.babelgroup.renting.entities.Client;
-import com.babelgroup.renting.entities.Freelance;
-import com.babelgroup.renting.entities.Salaried;
+import com.babelgroup.renting.entities.Income;
 import com.babelgroup.renting.entities.dtos.IncomeDTO;
-import com.babelgroup.renting.entities.dtos.RentingRequestDto;
 import com.babelgroup.renting.exceptions.RequestValidationException;
 import com.babelgroup.renting.logger.Log;
 import com.babelgroup.renting.services.IncomeService;
+import com.babelgroup.renting.validators.IncomeValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -17,9 +15,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/income")
@@ -33,9 +32,11 @@ import org.springframework.web.bind.annotation.*;
 })public class IncomeController {
 
     private final IncomeService incomeService;
+    private final IncomeValidator incomeValidator;
 
-    public IncomeController(IncomeService incomeService) {
+    public IncomeController(IncomeService incomeService, IncomeValidator incomeValidator) {
         this.incomeService = incomeService;
+        this.incomeValidator = incomeValidator;
     }
 
     @PostMapping("")
@@ -46,10 +47,17 @@ import org.springframework.web.bind.annotation.*;
     @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "DTO con los datos del id del cliente y la renta del cliente.", required = true,
             content = @Content(schema = @Schema(implementation = IncomeDTO.class)))
     public ResponseEntity<?> registerIncome(@Valid @RequestBody IncomeDTO incomeDto, BindingResult bindingResult) {
-        Long id = null;
+        incomeValidator.validate(incomeDto, bindingResult);
+        Long id;
         try {
+            if (bindingResult.hasErrors()) {
+                return new ResponseEntity<>(bindingResult.getAllErrors(), HttpStatus.BAD_REQUEST);
+            }
+
             id = incomeService.createIncome(incomeDto);
             if (id == null) throw new Exception();
+        } catch (RequestValidationException rve){
+            return new ResponseEntity<>(rve.getHttpMessage(), rve.getHttpStatus());
         }
         catch (Exception e) {
             Log.logError(e.getMessage(), e);
@@ -59,20 +67,17 @@ import org.springframework.web.bind.annotation.*;
         return new ResponseEntity<>(id, HttpStatus.CREATED);
     }
 
-
-
-    /*@GetMapping("/{clientId}")
-    @Operation(summary = "Recupera el income de cliente",
-        description = "Dado un id de cliente, recupera la renta")
-    @ApiResponse(responseCode = "200", description = "Renta de cliente recuperada correctamente.",
+    @GetMapping("/{clientId}")
+    @Operation(summary = "Recupera las rentas registradas del cliente",
+        description = "Dado un id de cliente, recupera sus rentas")
+    @ApiResponse(responseCode = "200", description = "Rentas de cliente recuperadas correctamente.",
         content = @Content(schema = @Schema(implementation = Long.class, example = "30")))
-    @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "")
-    public ResponseEntity<?> getIncome(@PathVariable long clientId, BindingResult bindingResult) {
+    public ResponseEntity<?> getIncomes(@PathVariable long clientId) {
         try {
-            List<Income> incomesClient = incomeService.getIncomes(clientId);
-            return new ResponseEntity<>(incomesClient, HttpStatus.OK);
+            List<IncomeDTO> incomesList = incomeService.getIncomes(clientId);
+            return new ResponseEntity<>(incomesList, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-    }*/
+    }
 }
