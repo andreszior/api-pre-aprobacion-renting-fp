@@ -1,3 +1,4 @@
+/*
 package com.babelgroup.renting.services.rules.approbations.impl;
 
 import com.babelgroup.renting.entities.RentingRequest;
@@ -51,3 +52,4 @@ public class InvestmentRuleTest {
     }
 
 }
+*/

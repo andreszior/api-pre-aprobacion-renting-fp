@@ -1,7 +1,6 @@
 package com.babelgroup.renting.services.impl;
 
 import com.babelgroup.renting.entities.Freelance;
-import com.babelgroup.renting.entities.Income;
 import com.babelgroup.renting.entities.Salaried;
 import com.babelgroup.renting.entities.dtos.IncomeDTO;
 import com.babelgroup.renting.logger.Log;
