@@ -79,13 +79,14 @@ public class RentingRequestController {
         }
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{rentingRequestId}")
     @Operation(summary = "Eliminar la Renting request correspondiente al Id indicado.",
             description = "Dado un id por parámetro, elimina la Renting Request con Id rentingRequestId.")
     @ApiResponse(responseCode = "200", description = "Renting request eliminada correctamente.")
     @ApiResponse(responseCode = "404", description = "Renting request no encontrada.")
     public ResponseEntity<Void> deleteRentingRequest(@PathVariable long rentingRequestId) throws RentingRequestNotFoundException {
         boolean deleted = rentingRequestService.deleteRentingRequest(rentingRequestId);
+
         if (deleted){
             return ResponseEntity.ok().build();
         } else {
