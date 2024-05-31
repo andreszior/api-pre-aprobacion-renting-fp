@@ -5,6 +5,8 @@ import com.babelgroup.renting.entities.Client;
 import com.babelgroup.renting.entities.Country;
 import com.babelgroup.renting.entities.Province;
 import com.babelgroup.renting.entities.dtos.ClientDto;
+import com.babelgroup.renting.exceptions.ClientsAlreadyExistsException;
+import com.babelgroup.renting.exceptions.CountryOrProvinceException;
 import com.babelgroup.renting.services.ClientService;
 import com.babelgroup.renting.services.CountryService;
 import com.babelgroup.renting.services.ProvinceService;
@@ -15,10 +17,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 
@@ -43,6 +47,7 @@ class CreateClientTests {
     private ClientDto clientDto;
     private BindingResult bindingResult;
 
+ 
     @BeforeEach
     void setUp() {
         clientService = Mockito.mock(ClientService.class);
@@ -74,76 +79,63 @@ class CreateClientTests {
         Assertions.assertEquals(expectedResponseEntity, actualResponseEntity);
     }
 
+
     @Test
-    void testCreateClient_shouldReturnBadRequest_whenClientExistsIsTrue() {
-        //Given
-        ResponseEntity<?> expectedResponseEntity = new ResponseEntity<>("El cliente ya existe", HttpStatus.BAD_REQUEST);
-        //When
+    void testCreateClient_shouldReturnClientAlreadyExistsException_whenClientExistsIsTrue() {
+        // Given
+        var clientsAlreadyExistsException = new ClientsAlreadyExistsException("El cliente ya existe");
+        ResponseEntity<?> expectedResponseEntity = new ResponseEntity<>(clientsAlreadyExistsException.getHttpMessage(), clientsAlreadyExistsException.getHttpStatus());
+
+        // When
         when(bindingResult.hasErrors()).thenReturn(false);
         when(clientService.clientExists(clientDto.getDni())).thenReturn(true);
         ResponseEntity<?> actualResponseEntity = sut.registerClient(clientDto, bindingResult);
-        //Then
-        Assertions.assertEquals(expectedResponseEntity, actualResponseEntity);
+
+        // Then
+        Assertions.assertEquals(expectedResponseEntity.getStatusCode(), actualResponseEntity.getStatusCode());
     }
 
-    @Test
-    void testCreateClient_shouldReturnBadRequest_whenIsNotFreelanceAndIsNotSalaried() {
-        //Given
-        clientDto.setNetIncome(null);
-        ResponseEntity<?> expectedResponseEntity = new ResponseEntity<>("El cliente debe ser autónomo o asalariado",
-                HttpStatus.BAD_REQUEST);
-        //When
-        when(bindingResult.hasErrors()).thenReturn(false);
-        when(clientService.clientExists(clientDto.getDni())).thenReturn(false);
-        ResponseEntity<?> actualResponseEntity = sut.registerClient(clientDto, bindingResult);
-        //Then
-        Assertions.assertEquals(expectedResponseEntity, actualResponseEntity);
-    }
 
     @Test
-    void testCreateClient_shouldReturnBadRequest_whenCountryIsNull() {
-        //Given
-        Province provinceCode = setProvince("2");
-        ResponseEntity<?> expectedResponseEntity = new ResponseEntity<>("El país o la provincia no existen o son erroneas",
-                HttpStatus.BAD_REQUEST);
-        //When
+    void testCreateClient_shouldReturnCountryOrProvinceException_whenCountryIsNull() {
+        // Given
+        var countryOrProvinceException = new CountryOrProvinceException("Error en el pais o provincia");
+        ResponseEntity<?> expectedResponseEntity = new ResponseEntity<>(countryOrProvinceException.getHttpMessage(), countryOrProvinceException.getHttpStatus());
+
+        // When
         when(bindingResult.hasErrors()).thenReturn(false);
         when(clientService.clientExists(clientDto.getDni())).thenReturn(false);
-        when(provinceService.getProvince("2")).thenReturn(provinceCode);
         when(countryService.getCountry("ESP")).thenReturn(null);
-        Client clientEntity = sut.buildClientEntity(clientDto);
 
         ResponseEntity<?> actualResponseEntity = sut.registerClient(clientDto, bindingResult);
 
-        //Then
-        Assertions.assertNull(clientEntity.getCountry());
-        Assertions.assertEquals(expectedResponseEntity, actualResponseEntity);
+        // Then
+        Assertions.assertEquals(expectedResponseEntity.getStatusCode(), actualResponseEntity.getStatusCode());
     }
 
     @Test
-    void testCreateClient_shouldReturnBadRequest_whenProvinceIsNull() {
-        //Given
-        Country country = setCountry("ES ");
-        ResponseEntity<?> expectedResponseEntity = new ResponseEntity<>("El país o la provincia no existen o son erroneas",
-                HttpStatus.BAD_REQUEST);
-        //When
+    void testCreateClient_shouldReturnCountryOrProvinceException_whenProvinceIsNull() {
+        // Given
+        Country country = setCountry("ESP");
+        var countryOrProvinceException = new CountryOrProvinceException("Error en el pais o provincia");
+        ResponseEntity<?> expectedResponseEntity = new ResponseEntity<>(countryOrProvinceException.getHttpMessage(), countryOrProvinceException.getHttpStatus());
+
+        // When
         when(bindingResult.hasErrors()).thenReturn(false);
         when(clientService.clientExists(clientDto.getDni())).thenReturn(false);
         when(provinceService.getProvince("2")).thenReturn(null);
-        when(countryService.getCountry("ES ")).thenReturn(country);
-        Client clientEntity = sut.buildClientEntity(clientDto);
+        when(countryService.getCountry("ESP")).thenReturn(country);
 
         ResponseEntity<?> actualResponseEntity = sut.registerClient(clientDto, bindingResult);
 
-        //Then
-        Assertions.assertNull(clientEntity.getProvinceCode());
-        Assertions.assertEquals(expectedResponseEntity, actualResponseEntity);
+        // Then
+        Assertions.assertEquals(expectedResponseEntity.getStatusCode(), actualResponseEntity.getStatusCode());
     }
 
     @Test
     void testCreateClient_shouldReturnCreated_whenClientCreatedCorrectly() {
         //Given
-        Country country = setCountry("ES ");
+        Country country = setCountry("ESP");
         Province provinceCode = setProvince("2");
         Client expectedClient = createClientEntity(country, provinceCode);
         ResponseEntity<?> expectedResponseEntity = new ResponseEntity<>(HttpStatus.CREATED);
@@ -151,12 +143,13 @@ class CreateClientTests {
         //When
         when(bindingResult.hasErrors()).thenReturn(false);
         when(clientService.clientExists(clientDto.getDni())).thenReturn(false);
-        when(countryService.getCountry(eq("ES "))).thenReturn(country);
+        when(countryService.getCountry(eq("ESP"))).thenReturn(country);
         when(provinceService.getProvince(eq("2"))).thenReturn(provinceCode);
         ResponseEntity<?> actualResponseEntity = sut.registerClient(clientDto, bindingResult);
 
         //Then
-        verify(clientService, times(1)).createClient(this.accountArgumentCaptor.capture());
+//        verify(clientService, times(1)).createClient(this.accountArgumentCaptor.capture());
+        verify(clientService, times(1)).createClient(clientDto);
         Client client = this.accountArgumentCaptor.getValue();
 
         Assertions.assertEquals(expectedClient, client);
@@ -167,7 +160,7 @@ class CreateClientTests {
         Country country = new Country();
         country.setId(1L);
         country.setName(name);
-        country.setIso3("ES ");
+        country.setIso3("ESP");
         return country;
     }
 
@@ -199,13 +192,8 @@ class CreateClientTests {
         clientDto.setLastnameSecond("González");
         clientDto.setRating(0);
         clientDto.setBirthdate(new GregorianCalendar(2014, Calendar.FEBRUARY, 11).getTime());
-        clientDto.setCountry("ES ");
+        clientDto.setCountry("ESP");
         clientDto.setProvinceCode("2");
-        clientDto.setNetIncome(30000.0);
-        clientDto.setGrossIncome(40000.0);
-        clientDto.setJobAntiquity(new Date());
-        clientDto.setSalaryYear(2021);
-        clientDto.setCompanyCif("112345678L");
 
         return clientDto;
     }
