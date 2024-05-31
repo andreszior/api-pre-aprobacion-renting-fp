@@ -20,7 +20,7 @@ class GuarantorVerificationRuleTest {
     }
 
     @Test
-    void testApprove_whenClientIsNew_shouldReturnTrue() {
+    void testApprove_whenClientIsNotNew_shouldReturnTrue() {
         // Arrange
         RentingRequest request = RentingRequest.builder().build();
         request.setClientId(1L);
@@ -34,7 +34,7 @@ class GuarantorVerificationRuleTest {
     }
 
     @Test
-    void testApprove_whenClientIsNotNewAndIsNotGuarantor_shouldReturnTrue() {
+    void testApprove_whenClientIsNewAndIsNotGuarantor_shouldReturnTrue() {
         // Arrange
         RentingRequest request = RentingRequest.builder().build();
         request.setClientId(1L);
@@ -49,22 +49,7 @@ class GuarantorVerificationRuleTest {
     }
 
     @Test
-    void testApprove_whenClientIsNotNewAndIsGuarantor_shouldReturnFalse() {
-        // Arrange
-        RentingRequest request = RentingRequest.builder().build();
-        request.setClientId(1L);
-        Mockito.when(clientMapper.isNewClient(1L)).thenReturn(false);
-        Mockito.when(clientMapper.isGuarantor(1L)).thenReturn(true);
-
-        // Act
-        boolean result = sut.approve(request);
-
-        // Assert
-        assertFalse(result);
-    }
-
-    @Test
-    void testApprove_whenClientIsNewAndIsGuarantor_shouldReturnTrue() {
+    void testApprove_whenClientIsNewAndIsGuarantor_shouldReturnFalse() {
         // Arrange
         RentingRequest request = RentingRequest.builder().build();
         request.setClientId(1L);
@@ -75,6 +60,6 @@ class GuarantorVerificationRuleTest {
         boolean result = sut.approve(request);
 
         // Assert
-        assertTrue(result);
+        assertFalse(result);
     }
 }

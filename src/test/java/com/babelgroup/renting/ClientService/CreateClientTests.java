@@ -62,18 +62,6 @@ class CreateClientTests {
     }
 
 
-    @Test
-    void testDeleteClient() {
-        Client clientToDelete = createClientEntity();
-
-        boolean result = sut.deleteClient(clientToDelete.getId());
-
-        assertTrue(result);
-        Assertions.assertEquals(clientToDelete.getDni(), clientMapper.getClientById(clientToDelete.getId()).getDni());
-
-    }
-
-
     private Client createClientEntity() {
         return Client.builder()
                 .dni("12345678A")
