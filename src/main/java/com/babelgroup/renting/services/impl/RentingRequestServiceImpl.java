@@ -53,7 +53,7 @@ public class RentingRequestServiceImpl implements RentingRequestService {
     @Override
     public RentingRequest getRentingRequest(long rentingRequestId) throws RentingRequestNotFoundException {
         RentingRequest rentingRequest = rentingRequestMapper.findRentingRequestById(rentingRequestId);
-        if (rentingRequest == null) throw new RentingRequestNotFoundException();
+        if (rentingRequest == null || rentingRequestMapper.getDeletionStatus(rentingRequestId) == 1) throw new RentingRequestNotFoundException();
         return rentingRequest;
     }
 
