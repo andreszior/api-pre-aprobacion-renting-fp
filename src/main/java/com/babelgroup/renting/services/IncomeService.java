@@ -6,18 +6,20 @@ import com.babelgroup.renting.entities.Salaried;
 import com.babelgroup.renting.entities.dtos.IncomeDTO;
 
 import java.util.Date;
+import java.util.List;
 
 public interface IncomeService {
 
-    void createFreelance(Freelance freelance);
+    Long createFreelance(Freelance freelance);
 
-    void createSalaried(Salaried salaried);
+    Long createSalaried(Salaried salaried);
 
     Date getEmploymentYear(Long idCliente);
 
     long getGrossIncome(Long idCliente, int year);
 
-    // Puede q devuelva un boolean
+    List<IncomeDTO> getIncomes (Long idCliente);
+
     Salaried getSalaried(Long idCliente);
 
     Long createIncome(IncomeDTO incomeDTO);

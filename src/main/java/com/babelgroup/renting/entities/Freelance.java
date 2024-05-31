@@ -8,6 +8,8 @@ import lombok.experimental.SuperBuilder;
 
 @Data
 @SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Freelance extends Income {
     private Double grossIncome;
 
