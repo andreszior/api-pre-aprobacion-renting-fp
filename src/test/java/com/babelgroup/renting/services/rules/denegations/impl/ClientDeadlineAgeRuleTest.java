@@ -1,3 +1,4 @@
+
 package com.babelgroup.renting.services.rules.denegations.impl;
 
 import com.babelgroup.renting.entities.RentingRequest;
