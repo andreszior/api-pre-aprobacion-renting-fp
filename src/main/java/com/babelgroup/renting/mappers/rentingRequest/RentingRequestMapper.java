@@ -49,6 +49,7 @@ public interface RentingRequestMapper {
             "FECHA_INICIO_VIGOR_RENTING as effectiveDateRenting, " +
             "FECHA_RESOLUCION as resolutionDate, " +
             "NUMERO_VEHICULOS as numberOfVehicles, " +
+            "NULL as vehicles, " +
             "INVERSION as investment, " +
             "CUOTA as fee, " +
             "PLAZO as deadline, " +
@@ -74,21 +75,20 @@ public interface RentingRequestMapper {
             "WHERE RESULTADO = #{status}")
     List<RentingRequest> findRentingRequestsByStatus(String status);
 
-    @Select("SELECT COUNT (*)" +
-            "FROM SOLICITUD " +
-            "WHERE RESULTADO = Denegada AND ID_CLIENTE = #{clientId};")
-    int numberOfDeniedRequest(@Param ("solicitudId") Long clientId);
+    @Select("SELECT COUNT(*) " +
+            "FROM INGUNIV_SCORING.SOLICITUD " +
+            "WHERE RESULTADO = 'Denegada' AND ID_CLIENTE = #{clientId}")
+    int numberOfDeniedRequest(@Param("clientId") Long clientId);
 
     @Select("SELECT BORRADO_LOGICO " +
-            "FROM SOLICITUD " +
+            "FROM INGUNIV_SCORING.SOLICITUD " +
             "WHERE ID_SOLICITUD = #{solicitudId}")
-    int getDeletionStatus(long solicitudId);
+    int getDeletionStatus(@Param("solicitudId") long solicitudId);
 
-    @Update("UPDATE SOLICITUD " +
-            "SET BORRADO_LOGICO = 1 " +
-            "FECHA_BORRADO = SYSDATE " +
-            "WHERE ID_SOLICITUD = #{solicitudId}")
-    void deleteRentingRequest(@Param("solicitudId") long solicitudId);;
+    @Update("UPDATE INGUNIV_SCORING.SOLICITUD SET BORRADO_LOGICO = 1, " +
+            "FECHA_BORRADO = SYSDATE WHERE ID_SOLICITUD = #{rentingRequestId}")
+    boolean deleteRentingRequest(@Param("rentingRequestId") long rentingRequestId);
+
 
     @Select("SELECT MAX(FECHA_RESOLUCION) " +
             "FROM SOLICITUD " +
