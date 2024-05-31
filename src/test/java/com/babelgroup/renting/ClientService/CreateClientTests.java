@@ -5,8 +5,6 @@ import com.babelgroup.renting.entities.Country;
 import com.babelgroup.renting.entities.Province;
 import com.babelgroup.renting.entities.dtos.ClientDto;
 import com.babelgroup.renting.mappers.ClientMapper;
-import com.babelgroup.renting.mappers.CountryMapper;
-import com.babelgroup.renting.mappers.IncomeMapper;
 import com.babelgroup.renting.services.ClientService;
 import com.babelgroup.renting.services.CountryService;
 import com.babelgroup.renting.services.ProvinceService;
@@ -28,7 +26,7 @@ import static org.mockito.Mockito.*;
 
 //@SpringBootTest
 @ExtendWith(MockitoExtension.class)
-class ClientServiceTests {
+class CreateClientTests {
 
     private ClientService sut;
     private ClientMapper clientMapper;
@@ -51,6 +49,8 @@ class ClientServiceTests {
         Client expectedClient = createClientEntity();
         ClientDto clientDto = createClientDto();
         //When
+        when(countryService.getCountry(clientDto.getCountry())).thenReturn(setCountry("ESP"));
+        when(provinceService.getProvince(clientDto.getProvinceCode())).thenReturn(setProvince("2"));
         sut.createClient(clientDto);
         //Then
         verify(clientMapper, times(1)).createClient(this.accountArgumentCaptor.capture());
