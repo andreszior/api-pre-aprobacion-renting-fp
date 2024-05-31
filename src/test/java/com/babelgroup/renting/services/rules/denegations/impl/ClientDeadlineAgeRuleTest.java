@@ -17,10 +17,6 @@ public class ClientDeadlineAgeRuleTest {
 
     private ClientDeadlineAgeRule sut;
     private ClientMapper clientMapper;
-
-    private Date oldBirthdate;
-    private Date oldBirthdate_2;
-    private Date youngBirthdate;
     private RentingRequest request;
 
     @BeforeEach
@@ -28,22 +24,6 @@ public class ClientDeadlineAgeRuleTest {
         clientMapper = Mockito.mock(ClientMapper.class);
 
         sut = new ClientDeadlineAgeRule(clientMapper);
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.YEAR, 1940);
-        calendar.set(Calendar.MONTH, Calendar.JANUARY);
-        calendar.set(Calendar.DAY_OF_MONTH, 1);
-        oldBirthdate = calendar.getTime();
-        calendar.set(Calendar.YEAR, 1950);
-        calendar.set(Calendar.MONTH, Calendar.JANUARY);
-        calendar.set(Calendar.DAY_OF_MONTH, 1);
-        oldBirthdate_2 = calendar.getTime();
-
-        Calendar youngCalendar = Calendar.getInstance();
-        youngCalendar.set(Calendar.YEAR, 2002);
-        youngCalendar.set(Calendar.MONTH, Calendar.JANUARY);
-        youngCalendar.set(Calendar.DAY_OF_MONTH, 1);
-        youngBirthdate = youngCalendar.getTime();
 
         request = RentingRequest.builder().build();
         request.setClientId(1L);
