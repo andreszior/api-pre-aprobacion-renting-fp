@@ -7,9 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.Year;
+import java.time.*;
 import java.util.Date;
 
 @RequiredArgsConstructor
@@ -21,7 +19,11 @@ public class EmploymentSeniorityRule implements ApprobationRule {
     @Override
     public boolean approve(RentingRequest request) {
         Date startYear = incomeMapper.getEploymentYear(request.getClientId());
-        float seniority = Duration.between(LocalDate.now(), startYear.toInstant()).toDays()/365f;
-        return seniority >= 3;
+        LocalDate startDate = startYear.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate currentDate = LocalDate.now();
+        int seniorityYears = Period.between(startDate, currentDate).getYears();
+        return seniorityYears >= 3;
     }
 }
+
+
