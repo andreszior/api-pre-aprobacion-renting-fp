@@ -2,8 +2,11 @@ package com.babelgroup.renting.services.impl;
 
 import com.babelgroup.renting.entities.RentingRequest;
 import com.babelgroup.renting.entities.Vehicle;
+import com.babelgroup.renting.entities.dtos.VehicleDto;
 import com.babelgroup.renting.services.FeeCalculationService;
+import org.springframework.stereotype.Service;
 
+@Service
 public class FeeCalculationServiceImpl implements FeeCalculationService {
 
     private static final int BASE_MONTH_DURATION = 12;

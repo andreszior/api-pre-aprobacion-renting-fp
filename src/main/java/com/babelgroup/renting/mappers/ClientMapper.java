@@ -1,10 +1,7 @@
 package com.babelgroup.renting.mappers;
 
 import com.babelgroup.renting.entities.*;
-import com.babelgroup.renting.entities.dtos.ClientDto;
 import org.apache.ibatis.annotations.*;
-
-import java.util.Date;
 
 @Mapper
 public interface ClientMapper {
@@ -23,26 +20,27 @@ public interface ClientMapper {
     @Select("SELECT Count(*) = 0 " +
             "FROM INGUNIV_SCORING.solicitud s " +
             "INNER JOIN INGUNIV_SCORING.garantia g ON s.ID_SOLICITUD = g.ID_GARANTIA " +
-            "WHERE s.resultado = 'Aprobada con garantías' AND s.ID_CLIENTE = :clientId")
+            "WHERE s.resultado = 'Aprobada con garantías' AND s.ID_CLIENTE = #{clientId}")
     boolean hasBeenGuarantor(Long clientId);
 
     @Select("SELECT COUNT(id_impago) " +
             "FROM INGUNIV_SCORING.titular_impago " +
-            "WHERE id_cliente = :clientId")
+            "WHERE id_cliente = #{clientId}")
     int getNumberOfUnpaids(Long clientId);
 
-    @Select("SELECT COUNT(ca.COD_CATEGORIA)  " +
+    @Select("SELECT COUNT(ca.COD_CATEGORIA) " +
             "FROM INGUNIV_SCORING.CLIENTE c " +
             "LEFT JOIN INGUNIV_SCORING.DEUDA d ON c.DNI = d.NIF  " +
             "LEFT JOIN INGUNIV_SCORING.CATEGORIA_ACREEDOR ca ON d.CATEGORIA_ACREEDOR_ID = ca.CATEGORIA_ACREEDOR_ID  " +
-            "WHERE c.ID_CLIENTE = :clientId AND ca.COD_CATEGORIA IN ('RT', 'FI');")
-    int getAssignorOrCreditor(Long clienteId);
+            "WHERE c.ID_CLIENTE = #{clienteId} AND ca.COD_CATEGORIA IN ('RT', 'FI')")
+    int getAssignorOrCreditor(@Param("clienteId") Long clienteId);
 
-    @Select("SELECT d.IMPORTE_IMPAGO " +
+
+    @Select("SELECT NVL(SUM(d.IMPORTE_IMPAGO), 0) " +
             "FROM INGUNIV_SCORING.DEUDA d " +
             "JOIN INGUNIV_SCORING.CLIENTE c ON d.NIF = c.DNI " +
-            "WHERE c.id_cliente = :clientID")
-    double getAmountDebt(Long clientId);
+            "WHERE c.id_cliente = #{clienteId}")
+    double getAmountDebt(@Param("clienteId") Long clienteId);
 
     @Select("SELECT COUNT(*) = 0 " +
             "FROM INGUNIV_SCORING.Producto_Contratado_Persona pcp " +
@@ -61,10 +59,10 @@ public interface ClientMapper {
             "AND s.resultado = 'Aprobada con garantías'")
     boolean isGuarantor(Long clientId);
 
-    @Select("SELECT c.ID_CLIENTE, TRUNC((SYSDATE - c.FECHA_NACIMIENTO) / 365.25, 0) " +
+    @Select("SELECT c.ID_CLIENTE, TRUNC((SYSDATE - c.FECHA_NACIMIENTO) / 365.25, 0) AS AGE " +
             "FROM INGUNIV_SCORING.CLIENTE c " +
-            "WHERE c.ID_CLIENTE = :clienteId;")
-    int getAgeClient(Long clienteId);
+            "WHERE c.ID_CLIENTE = #{clientId}")
+    int getAgeClient(@Param("clientId") Long clienteId);
 
     @Insert("INSERT INTO INGUNIV_SCORING.CLIENTE (DNI, NOMBRE, APELLIDO, SEGUNDO_APELLIDO, RATING, FECHA_NACIMIENTO, " +
             "NACIONALIDAD, COD_PROVINCIA) " +

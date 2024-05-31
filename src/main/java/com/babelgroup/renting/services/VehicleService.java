@@ -8,7 +8,9 @@ import com.babelgroup.renting.exceptions.WrongParamsException;
 import java.util.List;
 
 public interface VehicleService {
+    List<Vehicle> getAllVehicles();
+    Long addVehicle (VehicleDto vehicleDto);
+    Vehicle getVehicleById(Long vehicleId);
     List<Vehicle> getVehicles(String brand, String color, String model, Double minBaseFee, Double maxBaseFee);
-
     String addExtraToVehicle(long vehicleId, long extraId) throws WrongParamsException;
 }

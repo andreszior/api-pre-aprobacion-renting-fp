@@ -9,7 +9,13 @@ import java.util.List;
 
 @Mapper
 public interface RentingRequestMapper {
-    @Insert("INSERT INTO SOLICITUD (" +
+
+    @Select("SELECT ID_SOLICITUD FROM INGUNIV_SCORING.SOLICITUD")
+    List<Long> findUsedIds();
+
+
+    @Insert("INSERT INTO INGUNIV_SCORING.SOLICITUD (" +
+            "ID_SOLICITUD, " +
             "ID_CLIENTE, " +
             "FECHA_SOLICITUD, " +
             "FECHA_INICIO_VIGOR_RENTING, " +
@@ -20,6 +26,7 @@ public interface RentingRequestMapper {
             "PLAZO, " +
             "RESULTADO) " +
             "VALUES (" +
+            "#{id}, " +
             "#{clientId}, " +
             "#{rentingRequestDate}, " +
             "#{effectiveDateRenting}, " +
@@ -29,7 +36,7 @@ public interface RentingRequestMapper {
             "#{fee}, " +
             "#{deadline}, " +
             "#{resolution})")
-    RentingRequest createRentingRequest(RentingRequest rentingRequest);
+    Long createRentingRequest(RentingRequest rentingRequest);
 
     @Update("UPDATE SOLICITUD " +
             "SET RESULTADO = #{resolution} " +
